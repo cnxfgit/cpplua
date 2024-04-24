@@ -15,13 +15,13 @@
 #include "lstate.h"
 #include "lundump.h"
 
-typedef struct {
+struct DumpState{
  lua_State* L;
  lua_Writer writer;
  void* data;
  int strip;
  int status;
-} DumpState;
+} ;
 
 #define DumpMem(b,n,size,D)	DumpBlock(b,(n)*(size),D)
 #define DumpVar(x,D)	 	DumpMem(&x,1,sizeof(x),D)

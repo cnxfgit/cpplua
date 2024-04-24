@@ -21,11 +21,11 @@ typedef struct Zio ZIO;
 
 #define zgetc(z)  (((z)->n--)>0 ?  char2int(*(z)->p++) : luaZ_fill(z))
 
-typedef struct Mbuffer {
+struct Mbuffer {
   char *buffer;
   size_t n;
   size_t buffsize;
-} Mbuffer;
+};
 
 #define luaZ_initbuffer(L, buff) ((buff)->buffer = NULL, (buff)->buffsize = 0)
 

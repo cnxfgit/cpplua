@@ -33,7 +33,7 @@
 /*
 ** Union of all collectable objects
 */
-typedef union GCObject GCObject;
+union GCObject;
 
 
 /*
@@ -46,9 +46,9 @@ typedef union GCObject GCObject;
 /*
 ** Common header in struct form
 */
-typedef struct GCheader {
+struct GCheader {
   CommonHeader;
-} GCheader;
+};
 
 
 
@@ -56,12 +56,12 @@ typedef struct GCheader {
 /*
 ** Union of all Lua values
 */
-typedef union {
+union Value {
   GCObject *gc;
   void *p;
   lua_Number n;
   int b;
-} Value;
+} ;
 
 
 /*
@@ -70,9 +70,9 @@ typedef union {
 
 #define TValuefields	Value value; int tt
 
-typedef struct lua_TValue {
+struct TValue {
   TValuefields;
-} TValue;
+};
 
 
 /* Macros to test type */
@@ -196,7 +196,7 @@ typedef TValue *StkId;  /* index to stack elements */
 /*
 ** String headers for string table
 */
-typedef union TString {
+union TString {
   L_Umaxalign dummy;  /* ensures maximum alignment for strings */
   struct {
     CommonHeader;
@@ -204,7 +204,7 @@ typedef union TString {
     unsigned int hash;
     size_t len;
   } tsv;
-} TString;
+};
 
 
 #define getstr(ts)	cast(const char *, (ts) + 1)
@@ -212,7 +212,7 @@ typedef union TString {
 
 
 
-typedef union Udata {
+union Udata {
   L_Umaxalign dummy;  /* ensures maximum alignment for `local' udata */
   struct {
     CommonHeader;
@@ -220,7 +220,7 @@ typedef union Udata {
     struct Table *env;
     size_t len;
   } uv;
-} Udata;
+};
 
 
 
@@ -228,7 +228,7 @@ typedef union Udata {
 /*
 ** Function Prototypes
 */
-typedef struct Proto {
+struct Proto {
   CommonHeader;
   TValue *k;  /* constants used by the function */
   Instruction *code;
@@ -250,7 +250,7 @@ typedef struct Proto {
   lu_byte numparams;
   lu_byte is_vararg;
   lu_byte maxstacksize;
-} Proto;
+};
 
 
 /* masks for new-style vararg */
@@ -259,11 +259,11 @@ typedef struct Proto {
 #define VARARG_NEEDSARG		4
 
 
-typedef struct LocVar {
+struct LocVar {
   TString *varname;
   int startpc;  /* first point where variable is active */
   int endpc;    /* first point where variable is dead */
-} LocVar;
+};
 
 
 
@@ -271,7 +271,7 @@ typedef struct LocVar {
 ** Upvalues
 */
 
-typedef struct UpVal {
+struct UpVal {
   CommonHeader;
   TValue *v;  /* points to stack or to its own value */
   union {
@@ -281,7 +281,7 @@ typedef struct UpVal {
       struct UpVal *next;
     } l;
   } u;
-} UpVal;
+};
 
 
 /*
@@ -292,24 +292,24 @@ typedef struct UpVal {
 	CommonHeader; lu_byte isC; lu_byte nupvalues; GCObject *gclist; \
 	struct Table *env
 
-typedef struct CClosure {
+struct CClosure {
   ClosureHeader;
   lua_CFunction f;
   TValue upvalue[1];
-} CClosure;
+};
 
 
-typedef struct LClosure {
+struct LClosure {
   ClosureHeader;
   struct Proto *p;
   UpVal *upvals[1];
-} LClosure;
+};
 
 
-typedef union Closure {
+union Closure {
   CClosure c;
   LClosure l;
-} Closure;
+};
 
 
 #define iscfunction(o)	(ttype(o) == LUA_TFUNCTION && clvalue(o)->c.isC)
@@ -320,22 +320,22 @@ typedef union Closure {
 ** Tables
 */
 
-typedef union TKey {
+union TKey {
   struct {
     TValuefields;
     struct Node *next;  /* for chaining */
   } nk;
   TValue tvk;
-} TKey;
+};
 
 
-typedef struct Node {
+struct Node {
   TValue i_val;
   TKey i_key;
-} Node;
+};
 
 
-typedef struct Table {
+struct Table {
   CommonHeader;
   lu_byte flags;  /* 1<<p means tagmethod(p) is not present */ 
   lu_byte lsizenode;  /* log2 of size of `node' array */
@@ -345,7 +345,7 @@ typedef struct Table {
   Node *lastfree;  /* any free position is before this position */
   GCObject *gclist;
   int sizearray;  /* size of `array' array */
-} Table;
+};
 
 
 

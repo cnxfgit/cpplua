@@ -166,7 +166,7 @@ static int str_dump (lua_State *L) {
 #define CAP_UNFINISHED	(-1)
 #define CAP_POSITION	(-2)
 
-typedef struct MatchState {
+struct MatchState {
   const char *src_init;  /* init of source string */
   const char *src_end;  /* end (`\0') of source string */
   lua_State *L;
@@ -175,7 +175,7 @@ typedef struct MatchState {
     const char *init;
     ptrdiff_t len;
   } capture[LUA_MAXCAPTURES];
-} MatchState;
+};
 
 
 #define L_ESC		'%'

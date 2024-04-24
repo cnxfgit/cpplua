@@ -513,11 +513,11 @@ LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
 ** =======================================================
 */
 
-typedef struct LoadF {
+struct LoadF {
   int extraline;
   FILE *f;
   char buff[LUAL_BUFFERSIZE];
-} LoadF;
+};
 
 
 static const char *getF (lua_State *L, void *ud, size_t *size) {
@@ -585,10 +585,10 @@ LUALIB_API int luaL_loadfile (lua_State *L, const char *filename) {
 }
 
 
-typedef struct LoadS {
+struct LoadS {
   const char *s;
   size_t size;
-} LoadS;
+};
 
 
 static const char *getS (lua_State *L, void *ud, size_t *size) {

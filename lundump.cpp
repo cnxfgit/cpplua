@@ -20,12 +20,12 @@
 #include "lundump.h"
 #include "lzio.h"
 
-typedef struct {
+struct LoadState {
  lua_State* L;
  ZIO* Z;
  Mbuffer* b;
  const char* name;
-} LoadState;
+};
 
 #ifdef LUAC_TRUST_BINARIES
 #define IF(c,s)

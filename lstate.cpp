@@ -32,10 +32,10 @@
 /*
 ** Main thread combines a thread state and the global state
 */
-typedef struct LG {
+struct LG {
   lua_State l;
   global_State g;
-} LG;
+};
   
 
 

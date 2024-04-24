@@ -37,13 +37,13 @@
 /*
 ** nodes for block list (list of active blocks)
 */
-typedef struct BlockCnt {
+struct BlockCnt {
   struct BlockCnt *previous;  /* chain */
   int breaklist;  /* list of jumps out of this loop */
   lu_byte nactvar;  /* # active locals outside the breakable structure */
   lu_byte upval;  /* true if some variable in the block is an upvalue */
   lu_byte isbreakable;  /* true if `block' is a loop */
-} BlockCnt;
+};
 
 
 

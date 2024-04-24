@@ -15,7 +15,7 @@ TESTS= -g
 LOCAL = $(TESTS) $(CWARNS)
 
 CC= g++
-CPPFLAGS= -O3 -Wall $(MYCPPFLAGS)
+CPPFLAGS= -O3 -Wall -std=c++11 $(MYCPPFLAGS)
 AR= ar rcu
 RANLIB= ranlib
 RM= rm -f

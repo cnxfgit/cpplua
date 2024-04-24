@@ -40,19 +40,19 @@ enum RESERVED {
 LUAI_DATA const char *const luaX_tokens [];
 
 
-typedef union {
+union SemInfo {
   lua_Number r;
   TString *ts;
-} SemInfo;  /* semantics information */
+};  /* semantics information */
 
 
-typedef struct Token {
+struct Token {
   int token;
   SemInfo seminfo;
-} Token;
+};
 
 
-typedef struct LexState {
+struct LexState {
   int current;  /* current character (charint) */
   int linenumber;  /* input line counter */
   int lastline;  /* line of last token `consumed' */
@@ -64,7 +64,7 @@ typedef struct LexState {
   Mbuffer *buff;  /* buffer for tokens */
   TString *source;  /* current source name */
   char decpoint;  /* locale decimal point */
-} LexState;
+};
 
 
 LUAI_FUNC void luaX_init (lua_State *L);

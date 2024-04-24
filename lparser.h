@@ -35,7 +35,7 @@ typedef enum {
   VVARARG	/* info = instruction pc */
 } expkind;
 
-typedef struct expdesc {
+struct expdesc {
   expkind k;
   union {
     struct { int info, aux; } s;
@@ -43,20 +43,20 @@ typedef struct expdesc {
   } u;
   int t;  /* patch list of `exit when true' */
   int f;  /* patch list of `exit when false' */
-} expdesc;
+};
 
 
-typedef struct upvaldesc {
+struct upvaldesc {
   lu_byte k;
   lu_byte info;
-} upvaldesc;
+};
 
 
 struct BlockCnt;  /* defined in lparser.c */
 
 
 /* state needed to generate code for a given function */
-typedef struct FuncState {
+struct FuncState {
   Proto *f;  /* current function header */
   Table *h;  /* table to find (and reuse) elements in `k' */
   struct FuncState *prev;  /* enclosing function */
@@ -73,7 +73,7 @@ typedef struct FuncState {
   lu_byte nactvar;  /* number of active local variables */
   upvaldesc upvalues[LUAI_MAXUPVALUES];  /* upvalues */
   unsigned short actvar[LUAI_MAXVARS];  /* declared-variable stack */
-} FuncState;
+};
 
 
 LUAI_FUNC Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff,

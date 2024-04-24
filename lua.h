@@ -47,9 +47,9 @@
 #define LUA_ERRERR	5
 
 
-typedef struct lua_State lua_State;
+struct lua_State;
 
-typedef int (*lua_CFunction) (lua_State *L);
+using lua_CFunction = int (*) (lua_State *L);
 
 
 /*
@@ -63,7 +63,7 @@ typedef int (*lua_Writer) (lua_State *L, const void* p, size_t sz, void* ud);
 /*
 ** prototype for memory-allocation functions
 */
-typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize);
+using lua_Alloc = void *(*)(void *ud, void *ptr, size_t osize, size_t nsize);
 
 
 /*
@@ -325,7 +325,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 #define LUA_MASKLINE	(1 << LUA_HOOKLINE)
 #define LUA_MASKCOUNT	(1 << LUA_HOOKCOUNT)
 
-typedef struct lua_Debug lua_Debug;  /* activation record */
+struct lua_Debug;  /* activation record */
 
 
 /* Functions to be called by the debuger in specific events */

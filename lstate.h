@@ -35,24 +35,24 @@ struct lua_longjmp;  /* defined in ldo.c */
 
 
 
-typedef struct stringtable {
+struct stringtable {
   GCObject **hash;
   lu_int32 nuse;  /* number of elements */
   int size;
-} stringtable;
+};
 
 
 /*
 ** informations about a call
 */
-typedef struct CallInfo {
+struct CallInfo {
   StkId base;  /* base for this function */
   StkId func;  /* function index in the stack */
   StkId	top;  /* top for this function */
   const Instruction *savedpc;
   int nresults;  /* expected number of results from this function */
   int tailcalls;  /* number of tail calls lost under this entry */
-} CallInfo;
+};
 
 
 
@@ -65,7 +65,7 @@ typedef struct CallInfo {
 /*
 ** `global state', shared by all threads of this state
 */
-typedef struct global_State {
+struct global_State {
   stringtable strt;  /* hash table for strings */
   lua_Alloc frealloc;  /* function to reallocate memory */
   void *ud;         /* auxiliary data to `frealloc' */
@@ -91,7 +91,7 @@ typedef struct global_State {
   UpVal uvhead;  /* head of double-linked list of all open upvalues */
   struct Table *mt[NUM_TAGS];  /* metatables for basic types */
   TString *tmname[TM_N];  /* array with tag-method names */
-} global_State;
+};
 
 
 /*
