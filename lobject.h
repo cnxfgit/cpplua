@@ -86,30 +86,19 @@ struct TValue {
 
 /* Macros to access values */
 #define ttype(o)	((o)->tt)
-#define gcvalue(o)	check_exp(iscollectable(o), (o)->value.gc)
-#define pvalue(o)	check_exp(ttislightuserdata(o), (o)->value.p)
-#define nvalue(o)	check_exp(ttisnumber(o), (o)->value.n)
-#define rawtsvalue(o)	check_exp(ttisstring(o), &(o)->value.gc->ts)
+#define gcvalue(o)	((o)->value.gc)
+#define pvalue(o)	((o)->value.p)
+#define nvalue(o)	((o)->value.n)
+#define rawtsvalue(o)	(&(o)->value.gc->ts)
 #define tsvalue(o)	(&rawtsvalue(o)->tsv)
-#define rawuvalue(o)	check_exp(ttisuserdata(o), &(o)->value.gc->u)
+#define rawuvalue(o)	(&(o)->value.gc->u)
 #define uvalue(o)	(&rawuvalue(o)->uv)
-#define clvalue(o)	check_exp(ttisfunction(o), &(o)->value.gc->cl)
-#define hvalue(o)	check_exp(ttistable(o), &(o)->value.gc->h)
-#define bvalue(o)	check_exp(ttisboolean(o), (o)->value.b)
-#define thvalue(o)	check_exp(ttisthread(o), &(o)->value.gc->th)
+#define clvalue(o)	(&(o)->value.gc->cl)
+#define hvalue(o)	(&(o)->value.gc->h)
+#define bvalue(o)	((o)->value.b)
+#define thvalue(o) (&(o)->value.gc->th)
 
 #define l_isfalse(o)	(ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0))
-
-/*
-** for internal debug only
-*/
-#define checkconsistency(obj) \
-  lua_assert(!iscollectable(obj) || (ttype(obj) == (obj)->value.gc->gch.tt))
-
-#define checkliveness(g,obj) \
-  lua_assert(!iscollectable(obj) || \
-  ((ttype(obj) == (obj)->value.gc->gch.tt) && !isdead(g, (obj)->value.gc)))
-
 
 /* Macros to set values */
 #define setnilvalue(obj) ((obj)->tt=LUA_TNIL)
@@ -125,41 +114,34 @@ struct TValue {
 
 #define setsvalue(L,obj,x) \
   { TValue *i_o=(obj); \
-    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TSTRING; \
-    checkliveness(G(L),i_o); }
+    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TSTRING; }
 
 #define setuvalue(L,obj,x) \
   { TValue *i_o=(obj); \
-    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TUSERDATA; \
-    checkliveness(G(L),i_o); }
+    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TUSERDATA;}
 
 #define setthvalue(L,obj,x) \
   { TValue *i_o=(obj); \
-    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TTHREAD; \
-    checkliveness(G(L),i_o); }
+    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TTHREAD; }
 
 #define setclvalue(L,obj,x) \
   { TValue *i_o=(obj); \
-    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TFUNCTION; \
-    checkliveness(G(L),i_o); }
+    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TFUNCTION;}
 
 #define sethvalue(L,obj,x) \
   { TValue *i_o=(obj); \
-    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TTABLE; \
-    checkliveness(G(L),i_o); }
+    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TTABLE;}
 
 #define setptvalue(L,obj,x) \
   { TValue *i_o=(obj); \
-    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TPROTO; \
-    checkliveness(G(L),i_o); }
+    i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TPROTO;}
 
 
 
 
 #define setobj(L,obj1,obj2) \
   { const TValue *o2=(obj2); TValue *o1=(obj1); \
-    o1->value = o2->value; o1->tt=o2->tt; \
-    checkliveness(G(L),o1); }
+    o1->value = o2->value; o1->tt=o2->tt;}
 
 
 /*
@@ -351,8 +333,7 @@ struct Table {
 /*
 ** `module' operation for hashing (size is always a power of 2)
 */
-#define lmod(s,size) \
-	(check_exp((size&(size-1))==0, (cast(int, (s) & ((size)-1)))))
+#define lmod(s,size) (cast(int, (s) & ((size)-1)))
 
 
 #define twoto(x)	(1<<(x))

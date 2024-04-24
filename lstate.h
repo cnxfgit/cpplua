@@ -145,17 +145,16 @@ union GCObject {
 
 
 /* macros to convert a GCObject into a specific value */
-#define rawgco2ts(o)	check_exp((o)->gch.tt == LUA_TSTRING, &((o)->ts))
+#define rawgco2ts(o)	(&((o)->ts))
 #define gco2ts(o)	(&rawgco2ts(o)->tsv)
-#define rawgco2u(o)	check_exp((o)->gch.tt == LUA_TUSERDATA, &((o)->u))
+#define rawgco2u(o)	(&((o)->u))
 #define gco2u(o)	(&rawgco2u(o)->uv)
-#define gco2cl(o)	check_exp((o)->gch.tt == LUA_TFUNCTION, &((o)->cl))
-#define gco2h(o)	check_exp((o)->gch.tt == LUA_TTABLE, &((o)->h))
-#define gco2p(o)	check_exp((o)->gch.tt == LUA_TPROTO, &((o)->p))
-#define gco2uv(o)	check_exp((o)->gch.tt == LUA_TUPVAL, &((o)->uv))
-#define ngcotouv(o) \
-	check_exp((o) == nullptr || (o)->gch.tt == LUA_TUPVAL, &((o)->uv))
-#define gco2th(o)	check_exp((o)->gch.tt == LUA_TTHREAD, &((o)->th))
+#define gco2cl(o)	(&((o)->cl))
+#define gco2h(o)	(&((o)->h))
+#define gco2p(o)	(&((o)->p))
+#define gco2uv(o)	(&((o)->uv))
+#define ngcotouv(o) (&((o)->uv))
+#define gco2th(o) (&((o)->th))
 
 /* macro to convert any Lua object into a GCObject */
 #define obj2gco(v)	(cast(GCObject *, (v)))

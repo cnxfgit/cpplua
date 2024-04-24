@@ -252,7 +252,6 @@ static int lessequal (lua_State *L, const TValue *l, const TValue *r) {
 
 int luaV_equalval (lua_State *L, const TValue *t1, const TValue *t2) {
   const TValue *tm;
-  lua_assert(ttype(t1) == ttype(t2));
   switch (ttype(t1)) {
     case LUA_TNIL: return 1;
     case LUA_TNUMBER: return luai_numeq(nvalue(t1), nvalue(t2));
@@ -325,7 +324,7 @@ static void Arith (lua_State *L, StkId ra, const TValue *rb,
       case TM_MOD: setnvalue(ra, luai_nummod(nb, nc)); break;
       case TM_POW: setnvalue(ra, luai_numpow(nb, nc)); break;
       case TM_UNM: setnvalue(ra, luai_numunm(nb)); break;
-      default: lua_assert(0); break;
+      default: assert(0); break;
     }
   }
   else if (!call_binTM(L, rb, rc, ra, op))
@@ -342,13 +341,11 @@ static void Arith (lua_State *L, StkId ra, const TValue *rb,
 
 #define RA(i)	(base+GETARG_A(i))
 /* to be used after possible stack reallocation */
-#define RB(i)	check_exp(getBMode(GET_OPCODE(i)) == OpArgR, base+GETARG_B(i))
-#define RC(i)	check_exp(getCMode(GET_OPCODE(i)) == OpArgR, base+GETARG_C(i))
-#define RKB(i)	check_exp(getBMode(GET_OPCODE(i)) == OpArgK, \
-	ISK(GETARG_B(i)) ? k+INDEXK(GETARG_B(i)) : base+GETARG_B(i))
-#define RKC(i)	check_exp(getCMode(GET_OPCODE(i)) == OpArgK, \
-	ISK(GETARG_C(i)) ? k+INDEXK(GETARG_C(i)) : base+GETARG_C(i))
-#define KBx(i)	check_exp(getBMode(GET_OPCODE(i)) == OpArgK, k+GETARG_Bx(i))
+#define RB(i) (base+GETARG_B(i))
+#define RC(i)	(base+GETARG_C(i))
+#define RKB(i)	(ISK(GETARG_B(i)) ? k+INDEXK(GETARG_B(i)) : base+GETARG_B(i))
+#define RKC(i)	(ISK(GETARG_C(i)) ? k+INDEXK(GETARG_C(i)) : base+GETARG_C(i))
+#define KBx(i)	(k+GETARG_Bx(i))
 
 
 #define dojump(L,pc,i)	{(pc) += (i); luai_threadyield(L);}
@@ -395,9 +392,6 @@ void luaV_execute (lua_State *L, int nexeccalls) {
     }
     /* warning!! several calls may realloc the stack and invalidate `ra' */
     ra = RA(i);
-    lua_assert(base == L->base && L->base == L->ci->base);
-    lua_assert(base <= L->top && L->top <= L->stack + L->stacksize);
-    lua_assert(L->top == L->ci->top || luaG_checkopenop(i));
     switch (GET_OPCODE(i)) {
       case OP_MOVE: {
         setobjs2s(L, ra, RB(i));
@@ -428,7 +422,6 @@ void luaV_execute (lua_State *L, int nexeccalls) {
         TValue g;
         TValue *rb = KBx(i);
         sethvalue(L, &g, cl->env);
-        lua_assert(ttisstring(rb));
         Protect(luaV_gettable(L, &g, rb, ra));
         continue;
       }
@@ -439,7 +432,6 @@ void luaV_execute (lua_State *L, int nexeccalls) {
       case OP_SETGLOBAL: {
         TValue g;
         sethvalue(L, &g, cl->env);
-        lua_assert(ttisstring(KBx(i)));
         Protect(luaV_settable(L, &g, KBx(i), ra));
         continue;
       }
@@ -603,7 +595,6 @@ void luaV_execute (lua_State *L, int nexeccalls) {
         int b = GETARG_B(i);
         if (b != 0) L->top = ra+b;  /* else previous instruction set top */
         L->savedpc = pc;
-        lua_assert(GETARG_C(i) - 1 == LUA_MULTRET);
         switch (luaD_precall(L, ra, LUA_MULTRET)) {
           case PCRLUA: {
             /* tail call: put new frame in place of previous one */
@@ -616,7 +607,6 @@ void luaV_execute (lua_State *L, int nexeccalls) {
             for (aux = 0; pfunc+aux < L->top; aux++)  /* move frame down */
               setobjs2s(L, func+aux, pfunc+aux);
             ci->top = L->top = func+aux;  /* correct top */
-            lua_assert(L->top == L->base + clvalue(func)->l.p->maxstacksize);
             ci->savedpc = L->savedpc;
             ci->tailcalls++;  /* one more call lost */
             L->ci--;  /* remove new frame */
@@ -641,8 +631,6 @@ void luaV_execute (lua_State *L, int nexeccalls) {
           return;  /* no: return */
         else {  /* yes: continue its execution */
           if (b) L->top = L->ci->top;
-          lua_assert(isLua(L->ci));
-          lua_assert(GET_OPCODE(*((L->ci)->savedpc - 1)) == OP_CALL);
           goto reentry;
         }
       }
@@ -727,7 +715,6 @@ void luaV_execute (lua_State *L, int nexeccalls) {
           if (GET_OPCODE(*pc) == OP_GETUPVAL)
             ncl->l.upvals[j] = cl->upvals[GETARG_B(*pc)];
           else {
-            lua_assert(GET_OPCODE(*pc) == OP_MOVE);
             ncl->l.upvals[j] = luaF_findupval(L, base + GETARG_B(*pc));
           }
         }

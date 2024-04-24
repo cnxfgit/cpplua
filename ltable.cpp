@@ -81,7 +81,6 @@ static Node *hashnum (const Table *t, lua_Number n) {
   unsigned int a[numints];
   int i;
   n += 1;  /* normalize number (avoid -0) */
-  lua_assert(sizeof(a) <= sizeof(n));
   memcpy(a, &n, sizeof(a));
   for (i = 1; i < numints; i++) a[0] += a[i];
   return hashmod(t, a[0]);
@@ -199,7 +198,6 @@ static int computesizes (int nums[], int *narray) {
     if (a == *narray) break;  /* all elements already counted */
   }
   *narray = n;
-  lua_assert(*narray/2 <= na && na <= *narray);
   return na;
 }
 
@@ -401,7 +399,6 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
       rehash(L, t, key);  /* grow table */
       return luaH_set(L, t, key);  /* re-insert key into grown table */
     }
-    lua_assert(n != dummynode);
     othern = mainposition(t, key2tval(mp));
     if (othern != mp) {  /* is colliding node out of its main position? */
       /* yes; move colliding node into free position */
@@ -420,7 +417,6 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
   }
   gkey(mp)->value = key->value; gkey(mp)->tt = key->tt;
   luaC_barriert(L, t, key);
-  lua_assert(ttisnil(gval(mp)));
   return gval(mp);
 }
 

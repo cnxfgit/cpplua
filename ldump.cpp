@@ -99,7 +99,7 @@ static void DumpConstants(const Proto* f, DumpState* D)
 	DumpString(rawtsvalue(o),D);
 	break;
    default:
-	lua_assert(0);			/* cannot happen */
+	assert(0);			/* cannot happen */
 	break;
   }
  }

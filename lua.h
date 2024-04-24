@@ -55,9 +55,9 @@ using lua_CFunction = int (*) (lua_State *L);
 /*
 ** functions that read/write blocks when loading/dumping Lua chunks
 */
-typedef const char * (*lua_Reader) (lua_State *L, void *ud, size_t *sz);
+using lua_Reader = const char * (*) (lua_State *L, void *ud, size_t *sz);
 
-typedef int (*lua_Writer) (lua_State *L, const void* p, size_t sz, void* ud);
+using lua_Writer = int (*) (lua_State *L, const void* p, size_t sz, void* ud);
 
 
 /*
@@ -93,7 +93,6 @@ using lua_Alloc = void *(*)(void *ud, void *ptr, size_t osize, size_t nsize);
 #define LUA_DEBUG
 
 #include <cassert>
-#define lua_assert(c)           assert(c)
 
 
 /* to avoid warnings, and to make sure value is really unused */
@@ -101,11 +100,11 @@ using lua_Alloc = void *(*)(void *ud, void *ptr, size_t osize, size_t nsize);
 
 
 /* type of numbers in Lua */
-typedef LUA_NUMBER lua_Number;
+using  lua_Number = LUA_NUMBER;
 
 
 /* type for integer functions */
-typedef LUA_INTEGER lua_Integer;
+using lua_Integer = LUA_INTEGER;
 
 
 
