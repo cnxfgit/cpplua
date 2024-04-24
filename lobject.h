@@ -67,11 +67,9 @@ union Value {
 /*
 ** Tagged Values
 */
-
-#define TValuefields	Value value; int tt
-
 struct TValue {
-  TValuefields;
+  Value value;
+  int tt;
 };
 
 
@@ -322,7 +320,8 @@ union Closure {
 
 union TKey {
   struct {
-    TValuefields;
+    Value value;
+    int tt;
     struct Node *next;  /* for chaining */
   } nk;
   TValue tvk;

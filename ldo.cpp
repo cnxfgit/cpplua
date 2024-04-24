@@ -254,9 +254,7 @@ static StkId tryfuncTM (lua_State *L, StkId func) {
 
 
 
-#define inc_ci(L) \
-  ((L->ci == L->end_ci) ? growCI(L) : \
-   (condhardstacktests(luaD_reallocCI(L, L->size_ci)), ++L->ci))
+#define inc_ci(L) ((L->ci == L->end_ci) ? growCI(L) : (++L->ci))
 
 
 int luaD_precall (lua_State *L, StkId func, int nresults) {

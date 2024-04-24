@@ -83,18 +83,6 @@ typedef lu_int32 Instruction;
 /* minimum size for string buffer */
 #define LUA_MINBUFFER	32
 
-#ifndef luai_threadyield
 #define luai_threadyield(L)     { }
-#endif
-
-
-/*
-** macro to control inclusion of some hard tests on stack reallocation
-*/ 
-#ifndef HARDSTACKTESTS
-#define condhardstacktests(x)	((void)0)
-#else
-#define condhardstacktests(x)	x
-#endif
 
 #endif

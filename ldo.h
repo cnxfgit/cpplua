@@ -15,9 +15,7 @@
 
 #define luaD_checkstack(L,n)	\
   if ((char *)L->stack_last - (char *)L->top <= (n)*(int)sizeof(TValue)) \
-    luaD_growstack(L, n); \
-  else condhardstacktests(luaD_reallocstack(L, L->stacksize - EXTRA_STACK - 1));
-
+    luaD_growstack(L, n);
 
 #define incr_top(L) {luaD_checkstack(L,1); L->top++;}
 
