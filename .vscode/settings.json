@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "stdio.h": "c",
+        "lcode.h": "c",
+        "lua.h": "c",
+        "ltests.h": "c"
+    }
+}
