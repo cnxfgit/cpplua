@@ -5,7 +5,7 @@
 */
 
 
-#include <stddef.h>
+#include <cstddef>
 
 #define ltablib_c
 #define LUA_LIB
@@ -267,7 +267,7 @@ static const luaL_Reg tab_funcs[] = {
   {"remove", tremove},
   {"setn", setn},
   {"sort", sort},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
 

@@ -27,7 +27,7 @@ struct Mbuffer {
   size_t buffsize;
 };
 
-#define luaZ_initbuffer(L, buff) ((buff)->buffer = NULL, (buff)->buffsize = 0)
+#define luaZ_initbuffer(L, buff) ((buff)->buffer = nullptr, (buff)->buffsize = 0)
 
 #define luaZ_buffer(buff)	((buff)->buffer)
 #define luaZ_sizebuffer(buff)	((buff)->buffsize)

@@ -9,8 +9,8 @@
 #ifndef lua_h
 #define lua_h
 
-#include <stdarg.h>
-#include <stddef.h>
+#include <cstdarg>
+#include <cstddef>
 
 
 
@@ -92,7 +92,7 @@ using lua_Alloc = void *(*)(void *ud, void *ptr, size_t osize, size_t nsize);
 */
 #define LUA_DEBUG
 
-#include <assert.h>
+#include <cassert>
 #define lua_assert(c)           assert(c)
 
 
@@ -281,7 +281,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 #define lua_getglobal(L,s)	lua_getfield(L, LUA_GLOBALSINDEX, (s))
 
-#define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)
+#define lua_tostring(L,i)	lua_tolstring(L, (i), nullptr)
 
 
 

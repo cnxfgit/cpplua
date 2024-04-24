@@ -8,8 +8,8 @@
 #define llimits_h
 
 
-#include <limits.h>
-#include <stddef.h>
+#include <climits>
+#include <cstddef>
 
 
 #include "lua.h"
@@ -83,14 +83,8 @@ typedef lu_int32 Instruction;
 /* minimum size for string buffer */
 #define LUA_MINBUFFER	32
 
-
-#ifndef lua_lock
-#define lua_lock(L)     ((void) 0) 
-#define lua_unlock(L)   ((void) 0)
-#endif
-
 #ifndef luai_threadyield
-#define luai_threadyield(L)     {lua_unlock(L); lua_lock(L);}
+#define luai_threadyield(L)     { }
 #endif
 
 

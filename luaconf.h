@@ -8,8 +8,8 @@
 #ifndef lconfig_h
 #define lconfig_h
 
-#include <limits.h>
-#include <stddef.h>
+#include <climits>
+#include <cstddef>
 
 
 /*
@@ -167,10 +167,10 @@
 ** CHANGE them if you want to improve this functionality (e.g., by using
 ** GNU readline and history facilities).
 */
-#include <stdio.h>
+#include <cstdio>
 #include <readline/readline.h>
 #include <readline/history.h>
-#define lua_readline(L,b,p)	((void)L, ((b)=readline(p)) != NULL)
+#define lua_readline(L,b,p)	((void)L, ((b)=readline(p)) != nullptr)
 #define lua_saveline(L,idx) \
 	if (lua_strlen(L,idx) > 0)  /* non-empty line? */ \
 	  add_history(lua_tostring(L, idx));  /* add it to history */
@@ -196,14 +196,6 @@
 */
 #define LUAI_GCMUL	200 /* GC runs 'twice the speed' of memory allocation */
 
-
-
-/*
-@@ LUA_COMPAT_GETN controls compatibility with old getn behavior.
-** CHANGE it (define it) if you want exact compatibility with the
-** behavior of setn/getn in Lua 5.0.
-*/
-#undef LUA_COMPAT_GETN
 
 /*
 @@ LUA_COMPAT_LOADLIB controls compatibility about global loadlib.
@@ -250,36 +242,13 @@
 #define LUA_COMPAT_OPENLIB
 
 
-
-/*
-@@ luai_apicheck is the assert macro used by the Lua-C API.
-** CHANGE luai_apicheck if you want Lua to perform some checks in the
-** parameters it gets from API calls. This may slow down the interpreter
-** a bit, but may be quite useful when debugging C code that interfaces
-** with Lua. A useful redefinition is to use assert.h.
-*/
-#if defined(LUA_USE_APICHECK)
-#include <assert.h>
-#define luai_apicheck(L,o)	{ (void)L; assert(o); }
-#else
-#define luai_apicheck(L,o)	{ (void)L; }
-#endif
-
-
 /*
 @@ LUAI_BITSINT defines the number of bits in an int.
 ** CHANGE here if Lua cannot automatically detect the number of bits of
 ** your machine. Probably you do not need to change this.
 */
 /* avoid overflows in comparison */
-#if INT_MAX-20 < 32760
-#define LUAI_BITSINT	16
-#elif INT_MAX > 2147483640L
-/* int has at least 32 bits */
 #define LUAI_BITSINT	32
-#else
-#error "you must define LUA_BITSINT with number of bits in an integer"
-#endif
 
 
 /*
@@ -294,20 +263,10 @@
 ** part always works, but may waste space on machines with 64-bit
 ** longs.) Probably you do not need to change this.
 */
-#if LUAI_BITSINT >= 32
 #define LUAI_UINT32	unsigned int
 #define LUAI_INT32	int
-#define LUAI_MAXINT32	INT_MAX
 #define LUAI_UMEM	size_t
 #define LUAI_MEM	ptrdiff_t
-#else
-/* 16-bit ints */
-#define LUAI_UINT32	unsigned long
-#define LUAI_INT32	long
-#define LUAI_MAXINT32	LONG_MAX
-#define LUAI_UMEM	unsigned long
-#define LUAI_MEM	long
-#endif
 
 
 /*
@@ -412,7 +371,7 @@
 @@ The luai_num* macros define the primitive operations over numbers.
 */
 #if defined(LUA_CORE)
-#include <math.h>
+#include <cmath>
 #define luai_numadd(a,b)	((a)+(b))
 #define luai_numsub(a,b)	((a)-(b))
 #define luai_nummul(a,b)	((a)*(b))
@@ -457,26 +416,11 @@
 ** compiling as C++ code, with _longjmp/_setjmp when asked to use them,
 ** and with longjmp/setjmp otherwise.
 */
-#if defined(__cplusplus)
 /* C++ exceptions */
 #define LUAI_THROW(L,c)	throw(c)
 #define LUAI_TRY(L,c,a)	try { a } catch(...) \
 	{ if ((c)->status == 0) (c)->status = -1; }
 #define luai_jmpbuf	int  /* dummy variable */
-
-#elif defined(LUA_USE_ULONGJMP)
-/* in Unix, try _longjmp/_setjmp (more efficient) */
-#define LUAI_THROW(L,c)	_longjmp((c)->b, 1)
-#define LUAI_TRY(L,c,a)	if (_setjmp((c)->b) == 0) { a }
-#define luai_jmpbuf	jmp_buf
-
-#else
-/* default handling with long jumps */
-#define LUAI_THROW(L,c)	longjmp((c)->b, 1)
-#define LUAI_TRY(L,c,a)	if (setjmp((c)->b) == 0) { a }
-#define luai_jmpbuf	jmp_buf
-
-#endif
 
 
 /*
@@ -508,7 +452,7 @@
 
 #else
 #define LUA_TMPNAMBUFSIZE	L_tmpnam
-#define lua_tmpnam(b,e)		{ e = (tmpnam(b) == NULL); }
+#define lua_tmpnam(b,e)		{ e = (tmpnam(b) == nullptr); }
 #endif
 
 #endif
@@ -541,20 +485,6 @@
 ** a multiple of the maximum alignment required for your machine.
 */
 #define LUAI_EXTRASPACE		0
-
-
-/*
-@@ luai_userstate* allow user-specific actions on threads.
-** CHANGE them if you defined LUAI_EXTRASPACE and need to do something
-** extra when a thread is created/deleted/resumed/yielded.
-*/
-#define luai_userstateopen(L)		((void)L)
-#define luai_userstateclose(L)		((void)L)
-#define luai_userstatethread(L,L1)	((void)L)
-#define luai_userstatefree(L)		((void)L)
-#define luai_userstateresume(L,n)	((void)L)
-#define luai_userstateyield(L,n)	((void)L)
-
 
 /*
 @@ LUA_INTFRMLEN is the length modifier for integer conversions

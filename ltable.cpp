@@ -18,8 +18,8 @@
 ** Hence even when the load factor reaches 100%, performance remains good.
 */
 
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 
 #define ltable_c
 #define LUA_CORE
@@ -38,11 +38,7 @@
 /*
 ** max size of array part is 2^MAXBITS
 */
-#if LUAI_BITSINT > 26
 #define MAXBITS		26
-#else
-#define MAXBITS		(LUAI_BITSINT-2)
-#endif
 
 #define MAXASIZE	(1 << MAXBITS)
 
@@ -73,8 +69,8 @@
 #define dummynode		(&dummynode_)
 
 static const Node dummynode_ = {
-  {{NULL}, LUA_TNIL},  /* value */
-  {{{NULL}, LUA_TNIL, NULL}}  /* key */
+  {{nullptr}, LUA_TNIL},  /* value */
+  {{{nullptr}, LUA_TNIL, nullptr}}  /* key */
 };
 
 
@@ -284,7 +280,7 @@ static void setnodevector (lua_State *L, Table *t, int size) {
     t->node = luaM_newvector(L, size, Node);
     for (i=0; i<size; i++) {
       Node *n = gnode(t, i);
-      gnext(n) = NULL;
+      gnext(n) = nullptr;
       setnilvalue(gkey(n));
       setnilvalue(gval(n));
     }
@@ -358,10 +354,10 @@ static void rehash (lua_State *L, Table *t, const TValue *ek) {
 Table *luaH_new (lua_State *L, int narray, int nhash) {
   Table *t = luaM_new(L, Table);
   luaC_link(L, obj2gco(t), LUA_TTABLE);
-  t->metatable = NULL;
+  t->metatable = nullptr;
   t->flags = cast_byte(~0);
   /* temporary values (kept only if some malloc fails) */
-  t->array = NULL;
+  t->array = nullptr;
   t->sizearray = 0;
   t->lsizenode = 0;
   t->node = cast(Node *, dummynode);
@@ -384,7 +380,7 @@ static Node *getfreepos (Table *t) {
     if (ttisnil(gkey(t->lastfree)))
       return t->lastfree;
   }
-  return NULL;  /* could not find a free place */
+  return nullptr;  /* could not find a free place */
 }
 
 
@@ -401,7 +397,7 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
   if (!ttisnil(gval(mp)) || mp == dummynode) {
     Node *othern;
     Node *n = getfreepos(t);  /* get a free place */
-    if (n == NULL) {  /* cannot find a free place? */
+    if (n == nullptr) {  /* cannot find a free place? */
       rehash(L, t, key);  /* grow table */
       return luaH_set(L, t, key);  /* re-insert key into grown table */
     }
@@ -412,7 +408,7 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
       while (gnext(othern) != mp) othern = gnext(othern);  /* find previous */
       gnext(othern) = n;  /* redo the chain with `n' in place of `mp' */
       *n = *mp;  /* copy colliding node into free pos. (mp->next also goes) */
-      gnext(mp) = NULL;  /* now `mp' is free */
+      gnext(mp) = nullptr;  /* now `mp' is free */
       setnilvalue(gval(mp));
     }
     else {  /* colliding node is in its own main position */

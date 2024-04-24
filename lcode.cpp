@@ -5,7 +5,7 @@
 */
 
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #define LUA_CORE
 
