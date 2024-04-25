@@ -145,10 +145,9 @@ LUA_API void lua_remove(lua_State *L, int idx) {
 }
 
 LUA_API void lua_insert(lua_State *L, int idx) {
-    StkId p;
+    StkId p = index2adr(L, idx);
     StkId q;
-
-    p = index2adr(L, idx);
+    
     for (q = L->top; q > p; q--)
         setobjs2s(L, q, q - 1);
     setobjs2s(L, p, L->top);
@@ -353,25 +352,21 @@ LUA_API const void *lua_topointer(lua_State *L, int idx) {
 */
 
 LUA_API void lua_pushnil(lua_State *L) {
-
     setnilvalue(L->top);
     api_incr_top(L);
 }
 
 LUA_API void lua_pushnumber(lua_State *L, lua_Number n) {
-
     setnvalue(L->top, n);
     api_incr_top(L);
 }
 
 LUA_API void lua_pushinteger(lua_State *L, lua_Integer n) {
-
     setnvalue(L->top, cast_num(n));
     api_incr_top(L);
 }
 
 LUA_API void lua_pushlstring(lua_State *L, const char *s, size_t len) {
-
     luaC_checkGC(L);
     setsvalue2s(L, L->top, luaS_newlstr(L, s, len));
     api_incr_top(L);
@@ -421,19 +416,16 @@ LUA_API void lua_pushcclosure(lua_State *L, lua_CFunction fn, int n) {
 }
 
 LUA_API void lua_pushboolean(lua_State *L, int b) {
-
     setbvalue(L->top, (b != 0)); /* ensure that true is 1 */
     api_incr_top(L);
 }
 
 LUA_API void lua_pushlightuserdata(lua_State *L, void *p) {
-
     setpvalue(L->top, p);
     api_incr_top(L);
 }
 
 LUA_API int lua_pushthread(lua_State *L) {
-
     setthvalue(L, L->top, L);
     api_incr_top(L);
 
@@ -477,7 +469,6 @@ LUA_API void lua_rawgeti(lua_State *L, int idx, int n) {
 }
 
 LUA_API void lua_createtable(lua_State *L, int narray, int nrec) {
-
     luaC_checkGC(L);
     sethvalue(L, L->top, luaH_new(L, narray, nrec));
     api_incr_top(L);
@@ -537,46 +528,41 @@ LUA_API void lua_getfenv(lua_State *L, int idx) {
 */
 
 LUA_API void lua_settable(lua_State *L, int idx) {
-    StkId t;
+    StkId t = index2adr(L, idx);
 
-    t = index2adr(L, idx);
     luaV_settable(L, t, L->top - 2, L->top - 1);
     L->top -= 2; /* pop index and value */
 }
 
 LUA_API void lua_setfield(lua_State *L, int idx, const char *k) {
-    StkId t;
+    StkId t = index2adr(L, idx);
     TValue key;
 
-    t = index2adr(L, idx);
     setsvalue(L, &key, luaS_new(L, k));
     luaV_settable(L, t, &key, L->top - 1);
     L->top--; /* pop value */
 }
 
 LUA_API void lua_rawset(lua_State *L, int idx) {
-    StkId t;
+    StkId t = index2adr(L, idx);
 
-    t = index2adr(L, idx);
     setobj2t(L, luaH_set(L, hvalue(t), L->top - 2), L->top - 1);
     luaC_barriert(L, hvalue(t), L->top - 1);
     L->top -= 2;
 }
 
 LUA_API void lua_rawseti(lua_State *L, int idx, int n) {
-    StkId o;
+    StkId o = index2adr(L, idx);
 
-    o = index2adr(L, idx);
     setobj2t(L, luaH_setnum(L, hvalue(o), n), L->top - 1);
     luaC_barriert(L, hvalue(o), L->top - 1);
     L->top--;
 }
 
 LUA_API int lua_setmetatable(lua_State *L, int objindex) {
-    TValue *obj;
+    TValue *obj = index2adr(L, objindex);
     Table *mt;
 
-    obj = index2adr(L, objindex);
     if (ttisnil(L->top - 1))
         mt = nullptr;
     else {
@@ -606,10 +592,9 @@ LUA_API int lua_setmetatable(lua_State *L, int objindex) {
 }
 
 LUA_API int lua_setfenv(lua_State *L, int idx) {
-    StkId o;
+    StkId o = index2adr(L, idx);
     int res = 1;
 
-    o = index2adr(L, idx);
     switch (ttype(o)) {
     case LUA_TFUNCTION:
         clvalue(o)->c.env = hvalue(L->top - 1);

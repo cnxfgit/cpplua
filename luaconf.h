@@ -169,25 +169,11 @@
 #define LUAI_GCMUL 200 /* GC runs 'twice the speed' of memory allocation */
 
 /*
-@@ LUA_COMPAT_LOADLIB controls compatibility about global loadlib.
-** CHANGE it to undefined as soon as you do not need a global 'loadlib'
-** function (the function is still available as 'package.loadlib').
-*/
-#undef LUA_COMPAT_LOADLIB
-
-/*
 @@ LUA_COMPAT_VARARG controls compatibility with old vararg feature.
 ** CHANGE it to undefined as soon as your programs use only '...' to
 ** access vararg parameters (instead of the old 'arg' table).
 */
 #define LUA_COMPAT_VARARG
-
-/*
-@@ LUA_COMPAT_MOD controls compatibility with old math.mod function.
-** CHANGE it to undefined as soon as your programs use 'math.fmod' or
-** the new '%' operator instead of 'math.mod'.
-*/
-#define LUA_COMPAT_MOD
 
 /*
 @@ LUA_COMPAT_LSTR controls compatibility with old long string nesting
@@ -196,13 +182,6 @@
 ** off the advisory error when nesting [[...]].
 */
 #define LUA_COMPAT_LSTR 1
-
-/*
-@@ LUA_COMPAT_GFIND controls compatibility with old 'string.gfind' name.
-** CHANGE it to undefined as soon as you rename 'string.gfind' to
-** 'string.gmatch'.
-*/
-#define LUA_COMPAT_GFIND
 
 /*
 @@ LUA_COMPAT_OPENLIB controls compatibility with old 'luaL_openlib'

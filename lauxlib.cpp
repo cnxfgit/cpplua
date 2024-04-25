@@ -431,8 +431,7 @@ static int errfile(lua_State *L, const char *what, int fnameindex) {
 
 LUALIB_API int luaL_loadfile(lua_State *L, const char *filename) {
     LoadF lf;
-    int status, readstatus;
-    int c;
+    
     int fnameindex = lua_gettop(L) + 1; /* index of filename on the stack */
     lf.extraline = 0;
     if (filename == nullptr) {
@@ -444,7 +443,7 @@ LUALIB_API int luaL_loadfile(lua_State *L, const char *filename) {
         if (lf.f == nullptr)
             return errfile(L, "open", fnameindex);
     }
-    c = getc(lf.f);
+    int c = getc(lf.f);
     if (c == '#') { /* Unix exec. file? */
         lf.extraline = 1;
         while ((c = getc(lf.f)) != EOF && c != '\n')
@@ -463,8 +462,8 @@ LUALIB_API int luaL_loadfile(lua_State *L, const char *filename) {
         lf.extraline = 0;
     }
     ungetc(c, lf.f);
-    status = lua_load(L, getF, &lf, lua_tostring(L, -1));
-    readstatus = ferror(lf.f);
+    int status = lua_load(L, getF, &lf, lua_tostring(L, -1));
+    int readstatus = ferror(lf.f);
     if (lf.f != stdin)
         fclose(lf.f); /* close file (even in case of errors) */
     if (readstatus) {
