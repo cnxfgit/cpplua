@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "cassert": "cpp"
-    }
+    },
+    "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, BreakBeforeBraces: Attach, IndentWidth: 4, TabWidth: 4}"
 }
