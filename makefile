@@ -1,33 +1,18 @@
-# makefile for building Lua
-# see INSTALL for installation instructions
-# see ../Makefile and luaconf.h for further customization
-
-# == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
-
 CWARNS= -pedantic -Waggregate-return -Wcast-align -Wpointer-arith -Wshadow \
         -Wsign-compare  -Wundef -Wwrite-strings
-# -Wcast-qual
-
-# -DEXTERNMEMCHECK -DHARDSTACKTESTS
-# -fomit-frame-pointer #-pg -malign-double
 TESTS= -g
 
-LOCAL = $(TESTS) $(CWARNS)
 
 CC= g++
-CPPFLAGS= -O2 -Wall -std=c++11 $(MYCPPFLAGS)
+CPPFLAGS= -O2 -Wall -std=c++11 $(TESTS) $(CWARNS)
 AR= ar rcu
 RANLIB= ranlib
 RM= rm -f
-
-# enable Linux goodies
-MYCPPFLAGS= $(LOCAL)
-MYLDFLAGS= -Wl,-E
-MYLIBS= -ldl -lreadline -lhistory -lncurses
+LDFLAGS= -Wl,-E
 
 # == END OF USER SETTINGS. NO NEED TO CHANGE ANYTHING BELOW THIS LINE =========
 
-LIBS = -lm
+LIBS = -lm -ldl -lreadline -lhistory
 
 CORE_T=	liblua.a
 CORE_O=	lapi.o lcode.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o lmem.o \
@@ -35,7 +20,7 @@ CORE_O=	lapi.o lcode.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o lmem.o \
 	lundump.o lvm.o lzio.o
 AUX_O=	lauxlib.o
 LIB_O=	lbaselib.o ldblib.o liolib.o lmathlib.o loslib.o ltablib.o lstrlib.o \
-	loadlib.o linit.o
+	loadlib.o lualib.o
 
 LUA_T=	lua
 LUA_O=	lua.o
@@ -58,10 +43,10 @@ $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
 	$(RANLIB) $@
 
 $(LUA_T): $(LUA_O) $(CORE_T)
-	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
+	$(CC) -o $@ $(LDFLAGS) $(LUA_O) $(CORE_T) $(LIBS)
 
 $(LUAC_T): $(LUAC_O) $(CORE_T)
-	$(CC) -o $@ $(MYLDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS) $(MYLIBS)
+	$(CC) -o $@ $(LDFLAGS) $(LUAC_O) $(CORE_T) $(LIBS)
 
 clean:
 	$(RM) $(ALL_T) $(ALL_O)
@@ -75,10 +60,8 @@ echo:
 	@echo "AR = $(AR)"
 	@echo "RANLIB = $(RANLIB)"
 	@echo "RM = $(RM)"
-	@echo "MYCPPFLAGS = $(MYCPPFLAGS)"
-	@echo "MYLDFLAGS = $(MYLDFLAGS)"
-	@echo "MYLIBS = $(MYLIBS)"
-	@echo "DL = $(DL)"
+	@echo "LDFLAGS = $(LDFLAGS)"
+	@echo "LIBS = $(LIBS)"
 
 # DO NOT DELETE
 
@@ -103,7 +86,7 @@ lfunc.o: lfunc.cpp lua.h luaconf.h lfunc.h lobject.h llimits.h lgc.h lmem.h \
   lstate.h ltm.h lzio.h
 lgc.o: lgc.cpp lua.h luaconf.h ldebug.h lstate.h lobject.h llimits.h ltm.h \
   lzio.h lmem.h ldo.h lfunc.h lgc.h lstring.h ltable.h
-linit.o: linit.cpp lua.h luaconf.h lualib.h lauxlib.h
+lualib.o: lualib.cpp lua.h luaconf.h lualib.h lauxlib.h
 liolib.o: liolib.cpp lua.h luaconf.h lauxlib.h lualib.h
 llex.o: llex.cpp lua.h luaconf.h ldo.h lobject.h llimits.h lstate.h ltm.h \
   lzio.h lmem.h llex.h lparser.h ltable.h lstring.h lgc.h
@@ -137,4 +120,3 @@ lvm.o: lvm.cpp lua.h luaconf.h ldebug.h lstate.h lobject.h llimits.h ltm.h \
 lzio.o: lzio.cpp lua.h luaconf.h llimits.h lmem.h lstate.h lobject.h ltm.h \
   lzio.h
 
-# (end of Makefile)

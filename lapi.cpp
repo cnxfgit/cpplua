@@ -690,8 +690,7 @@ struct CCallS { /* data to `f_Ccall' */
 
 static void f_Ccall(lua_State *L, void *ud) {
     struct CCallS *c = cast(struct CCallS *, ud);
-    Closure *cl;
-    cl = luaF_newCclosure(L, 0, getcurrenv(L));
+    Closure *cl = luaF_newCclosure(L, 0, getcurrenv(L));
     cl->c.f = c->func;
     setclvalue(L, L->top, cl); /* push function */
     api_incr_top(L);
@@ -834,22 +833,6 @@ LUA_API void lua_concat(lua_State *L, int n) {
         api_incr_top(L);
     }
     /* else n == 1; nothing to do */
-}
-
-LUA_API lua_Alloc lua_getallocf(lua_State *L, void **ud) {
-    lua_Alloc f;
-
-    if (ud)
-        *ud = G(L)->ud;
-    f = G(L)->frealloc;
-
-    return f;
-}
-
-LUA_API void lua_setallocf(lua_State *L, lua_Alloc f, void *ud) {
-
-    G(L)->ud = ud;
-    G(L)->frealloc = f;
 }
 
 LUA_API void *lua_newuserdata(lua_State *L, size_t size) {

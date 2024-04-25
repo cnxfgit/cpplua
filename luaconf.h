@@ -16,19 +16,6 @@
 ** ===================================================================
 */
 
-#define LUA_USE_DLOPEN   /* needs an extra library: -ldl */
-#define LUA_USE_READLINE /* needs some extra libraries */
-
-/*
-@@ LUA_USE_POSIX includes all functionallity listed as X/Open System
-@* Interfaces Extension (XSI).
-** CHANGE it (define it) if your system is XSI compatible.
-*/
-#define LUA_USE_MKSTEMP
-#define LUA_USE_ISATTY
-#define LUA_USE_POPEN
-#define LUA_USE_ULONGJMP
-
 /*
 @@ LUA_PATH_DEFAULT is the default path that Lua uses to look for
 @* Lua libraries.
@@ -389,7 +376,7 @@
 ** and with longjmp/setjmp otherwise.
 */
 /* C++ exceptions */
-#define LUAI_THROW(L, c) throw(c)
+
 #define LUAI_TRY(L, c, a)                                                      \
     try {                                                                      \
         a                                                                      \
@@ -397,6 +384,7 @@
         if ((c)->status == 0)                                                  \
             (c)->status = -1;                                                  \
     }
+#define LUAI_THROW(L, c) throw(c)
 #define luai_jmpbuf int /* dummy variable */
 
 /*
@@ -416,7 +404,6 @@
 */
 #if defined(loslib_c)
 
-#if defined(LUA_USE_MKSTEMP)
 #include <unistd.h>
 #define LUA_TMPNAMBUFSIZE 32
 #define lua_tmpnam(b, e)                                                       \
@@ -428,12 +415,6 @@
         e = (e == -1);                                                         \
     }
 
-#else
-#define LUA_TMPNAMBUFSIZE L_tmpnam
-#define lua_tmpnam(b, e)                                                       \
-    { e = (tmpnam(b) == nullptr); }
-#endif
-
 #endif
 
 /*
@@ -441,19 +422,9 @@
 @* the file streams.
 ** CHANGE it if you have a way to implement it in your system.
 */
-#if defined(LUA_USE_POPEN)
 
 #define lua_popen(L, c, m) ((void)L, popen(c, m))
 #define lua_pclose(L, file) ((void)L, (pclose(file) != -1))
-
-#else
-
-#define lua_popen(L, c, m)                                                     \
-    ((void)((void)c, m), luaL_error(L, LUA_QL("popen") " not supported"),      \
-     (FILE *)0)
-#define lua_pclose(L, file) ((void)((void)L, file), 0)
-
-#endif
 
 /*
 @@ LUAI_EXTRASPACE allows you to add user-specific data in a lua_State
