@@ -355,8 +355,8 @@ static void close_func(LexState *ls) {
 }
 
 Proto *luaY_parser(lua_State *L, ZIO *z, Mbuffer *buff, const char *name) {
-    struct LexState lexstate;
-    struct FuncState funcstate;
+    LexState lexstate;
+    FuncState funcstate;
     lexstate.buff = buff;
     luaX_setinput(L, &lexstate, z, luaS_new(L, name));
     open_func(&lexstate, &funcstate);
@@ -514,11 +514,6 @@ static void parlist(LexState *ls) {
             }
             case TK_DOTS: { /* param -> `...' */
                 luaX_next(ls);
-#if defined(LUA_COMPAT_VARARG)
-                /* use `arg' as default name */
-                new_localvarliteral(ls, "arg", nparams++);
-                f->is_vararg = VARARG_HASARG | VARARG_NEEDSARG;
-#endif
                 f->is_vararg |= VARARG_ISVARARG;
                 break;
             }

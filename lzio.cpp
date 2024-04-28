@@ -19,9 +19,7 @@
 int luaZ_fill(ZIO *z) {
     size_t size;
     lua_State *L = z->L;
-    const char *buff;
-
-    buff = z->reader(L, z->data, &size);
+    const char *buff = z->reader(L, z->data, &size);
 
     if (buff == nullptr || size == 0)
         return EOZ;

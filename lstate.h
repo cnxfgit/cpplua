@@ -109,7 +109,7 @@ struct lua_State {
     TValue env;          /* temporary place for environments */
     GCObject *openupval; /* list of open upvalues in this stack */
     GCObject *gclist;
-    struct lua_longjmp *errorJmp; /* current error recover point */
+    lua_longjmp *errorJmp; /* current error recover point */
     ptrdiff_t errfunc; /* current error handling function (stack index) */
 };
 
@@ -123,10 +123,10 @@ union GCObject {
     union TString ts;
     union Udata u;
     union Closure cl;
-    struct Table h;
-    struct Proto p;
-    struct UpVal uv;
-    struct lua_State th; /* thread */
+    Table h;
+    Proto p;
+    UpVal uv;
+    lua_State th; /* thread */
 };
 
 /* macros to convert a GCObject into a specific value */

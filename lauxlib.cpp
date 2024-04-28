@@ -480,8 +480,8 @@ struct LoadS {
 };
 
 static const char *getS(lua_State *L, void *ud, size_t *size) {
+    UNUSED(L);
     LoadS *ls = (LoadS *)ud;
-    (void)L;
     if (ls->size == 0)
         return nullptr;
     *size = ls->size;

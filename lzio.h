@@ -13,7 +13,15 @@
 
 #define EOZ (-1) /* end of stream */
 
-typedef struct Zio ZIO;
+struct Zio {
+    size_t n;      /* bytes still unread */
+    const char *p; /* current position in buffer */
+    lua_Reader reader;
+    void *data;   /* additional data */
+    lua_State *L; /* Lua state (for reader) */
+};
+
+using ZIO = Zio;
 
 #define char2int(c) cast(int, cast(unsigned char, (c)))
 
@@ -47,13 +55,7 @@ LUAI_FUNC int luaZ_lookahead(ZIO *z);
 
 /* --------- Private Part ------------------ */
 
-struct Zio {
-    size_t n;      /* bytes still unread */
-    const char *p; /* current position in buffer */
-    lua_Reader reader;
-    void *data;   /* additional data */
-    lua_State *L; /* Lua state (for reader) */
-};
+
 
 LUAI_FUNC int luaZ_fill(ZIO *z);
 

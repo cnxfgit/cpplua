@@ -169,29 +169,6 @@
 #define LUAI_GCMUL 200 /* GC runs 'twice the speed' of memory allocation */
 
 /*
-@@ LUA_COMPAT_VARARG controls compatibility with old vararg feature.
-** CHANGE it to undefined as soon as your programs use only '...' to
-** access vararg parameters (instead of the old 'arg' table).
-*/
-#define LUA_COMPAT_VARARG
-
-/*
-@@ LUA_COMPAT_LSTR controls compatibility with old long string nesting
-@* facility.
-** CHANGE it to 2 if you want the old behaviour, or undefine it to turn
-** off the advisory error when nesting [[...]].
-*/
-#define LUA_COMPAT_LSTR 1
-
-/*
-@@ LUA_COMPAT_OPENLIB controls compatibility with old 'luaL_openlib'
-@* behavior.
-** CHANGE it to undefined as soon as you replace to 'luaL_registry'
-** your uses of 'luaL_openlib'
-*/
-#define LUA_COMPAT_OPENLIB
-
-/*
 @@ LUAI_BITSINT defines the number of bits in an int.
 ** CHANGE here if Lua cannot automatically detect the number of bits of
 ** your machine. Probably you do not need to change this.
@@ -423,12 +400,5 @@
 
 #define LUA_INTFRMLEN "l"
 #define LUA_INTFRM_T long
-
-/* =================================================================== */
-
-/*
-** Local configuration. You can use this space to add your redefinitions
-** without modifying the main part of the file.
-*/
 
 #endif

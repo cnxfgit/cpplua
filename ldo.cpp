@@ -37,8 +37,7 @@
 
 /* chain list of long jump buffers */
 struct lua_longjmp {
-    struct lua_longjmp *previous;
-    luai_jmpbuf b;
+    lua_longjmp *previous;
     volatile int status; /* error code */
 };
 
@@ -97,7 +96,7 @@ void luaD_throw(lua_State *L, int errcode) {
 }
 
 int luaD_rawrunprotected(lua_State *L, Pfunc f, void *ud) {
-    struct lua_longjmp lj;
+    lua_longjmp lj;
     lj.status = 0;
     lj.previous = L->errorJmp; /* chain new error handler */
     L->errorJmp = &lj;
@@ -188,18 +187,6 @@ static StkId adjust_varargs(lua_State *L, Proto *p, int actual) {
     StkId base, fixed;
     for (; actual < nfixargs; ++actual)
         setnilvalue(L->top++);
-#if defined(LUA_COMPAT_VARARG)
-    if (p->is_vararg & VARARG_NEEDSARG) { /* compat. with old-style vararg? */
-        int nvar = actual - nfixargs;     /* number of extra arguments */
-        luaC_checkGC(L);
-        htab = luaH_new(L, nvar, 1); /* create `arg' table */
-        for (i = 0; i < nvar; i++)   /* put extra arguments into `arg' table */
-            setobj2n(L, luaH_setnum(L, htab, i + 1), L->top - nvar + i);
-        /* store counter in field `n' */
-        setnvalue(luaH_setstr(L, htab, luaS_newliteral(L, "n")),
-                  cast_num(nvar));
-    }
-#endif
     /* move fixed parameters to final position */
     fixed = L->top - actual; /* first fixed argument */
     base = L->top;           /* final position of first argument */
@@ -402,13 +389,12 @@ LUA_API int lua_yield(lua_State *L, int nresults) {
 
 int luaD_pcall(lua_State *L, Pfunc func, void *u, ptrdiff_t old_top,
                ptrdiff_t ef) {
-    int status;
     unsigned short oldnCcalls = L->nCcalls;
     ptrdiff_t old_ci = saveci(L, L->ci);
     lu_byte old_allowhooks = L->allowhook;
     ptrdiff_t old_errfunc = L->errfunc;
     L->errfunc = ef;
-    status = luaD_rawrunprotected(L, func, u);
+    int status = luaD_rawrunprotected(L, func, u);
     if (status != 0) { /* an error occurred? */
         StkId oldtop = restorestack(L, old_top);
         luaF_close(L, oldtop); /* close eventual pending closures */
@@ -434,29 +420,25 @@ struct SParser { /* data to `f_parser' */
 };
 
 static void f_parser(lua_State *L, void *ud) {
-    int i;
-    Proto *tf;
-    Closure *cl;
-    struct SParser *p = cast(struct SParser *, ud);
+    SParser *p = cast(SParser *, ud);
     int c = luaZ_lookahead(p->z);
     luaC_checkGC(L);
-    tf = ((c == LUA_SIGNATURE[0]) ? luaU_undump
+    Proto *tf = ((c == LUA_SIGNATURE[0]) ? luaU_undump
                                   : luaY_parser)(L, p->z, &p->buff, p->name);
-    cl = luaF_newLclosure(L, tf->nups, hvalue(gt(L)));
+    Closure *cl = luaF_newLclosure(L, tf->nups, hvalue(gt(L)));
     cl->l.p = tf;
-    for (i = 0; i < tf->nups; i++) /* initialize eventual upvalues */
+    for (int i = 0; i < tf->nups; i++) /* initialize eventual upvalues */
         cl->l.upvals[i] = luaF_newupval(L);
     setclvalue(L, L->top, cl);
     incr_top(L);
 }
 
 int luaD_protectedparser(lua_State *L, ZIO *z, const char *name) {
-    struct SParser p;
-    int status;
+    SParser p;
     p.z = z;
     p.name = name;
     luaZ_initbuffer(L, &p.buff);
-    status = luaD_pcall(L, f_parser, &p, savestack(L, L->top), L->errfunc);
+    int status = luaD_pcall(L, f_parser, &p, savestack(L, L->top), L->errfunc);
     luaZ_freebuffer(L, &p.buff);
     return status;
 }

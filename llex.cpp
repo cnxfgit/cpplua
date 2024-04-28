@@ -145,7 +145,7 @@ static void buffreplace(LexState *ls, char from, char to) {
 
 static void trydecpoint(LexState *ls, SemInfo *seminfo) {
     /* format error: try to update decimal point separator */
-    struct lconv *cv = localeconv();
+    lconv *cv = localeconv();
     char old = ls->decpoint;
     ls->decpoint = (cv ? cv->decimal_point[0] : '.');
     buffreplace(ls, old, ls->decpoint); /* try updated decimal separator */
@@ -197,27 +197,9 @@ static void read_long_string(LexState *ls, SemInfo *seminfo, int sep) {
                                     : "unfinished long comment",
                           TK_EOS);
             break; /* to avoid warnings */
-#if defined(LUA_COMPAT_LSTR)
-        case '[': {
-            if (skip_sep(ls) == sep) {
-                save_and_next(ls); /* skip 2nd `[' */
-                cont++;
-#if LUA_COMPAT_LSTR == 1
-                if (sep == 0)
-                    luaX_lexerror(ls, "nesting of [[...]] is deprecated", '[');
-#endif
-            }
-            break;
-        }
-#endif
         case ']': {
             if (skip_sep(ls) == sep) {
                 save_and_next(ls); /* skip 2nd `]' */
-#if defined(LUA_COMPAT_LSTR) && LUA_COMPAT_LSTR == 2
-                cont--;
-                if (sep == 0 && cont >= 0)
-                    break;
-#endif
                 goto endloop;
             }
             break;

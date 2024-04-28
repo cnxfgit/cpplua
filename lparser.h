@@ -57,10 +57,10 @@ struct BlockCnt; /* defined in lparser.c */
 struct FuncState {
     Proto *f;               /* current function header */
     Table *h;               /* table to find (and reuse) elements in `k' */
-    struct FuncState *prev; /* enclosing function */
+    FuncState *prev; /* enclosing function */
     struct LexState *ls;    /* lexical state */
-    struct lua_State *L;    /* copy of the Lua state */
-    struct BlockCnt *bl;    /* chain of current blocks */
+    lua_State *L;    /* copy of the Lua state */
+    BlockCnt *bl;    /* chain of current blocks */
     int pc;                 /* next position to code (equivalent to `ncode') */
     int lasttarget;         /* `pc' of last `jump target' */
     int jpc;                /* list of pending jumps to `pc' */

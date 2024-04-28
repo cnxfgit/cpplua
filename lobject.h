@@ -29,6 +29,9 @@
 */
 union GCObject;
 
+
+struct Table;
+
 /*
 ** Common Header for all collectable objects (in macro form, to be
 ** included in other objects)
@@ -209,8 +212,8 @@ union Udata {
     L_Umaxalign dummy; /* ensures maximum alignment for `local' udata */
     struct {
         CommonHeader;
-        struct Table *metatable;
-        struct Table *env;
+        Table *metatable;
+        Table *env;
         size_t len;
     } uv;
 };
@@ -263,8 +266,8 @@ struct UpVal {
     union {
         TValue value; /* the value (when closed) */
         struct {      /* double linked list (when open) */
-            struct UpVal *prev;
-            struct UpVal *next;
+            UpVal *prev;
+            UpVal *next;
         } l;
     } u;
 };
