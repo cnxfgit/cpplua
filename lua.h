@@ -1,17 +1,118 @@
-/*
-** $Id: lua.h,v 1.215 2005/12/27 17:09:50 roberto Exp roberto $
-** Lua - An Extensible Extension Language
-** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
-** See Copyright Notice at the end of this file
-*/
-
 #ifndef lua_h
 #define lua_h
 
+#include <climits>
 #include <cstdarg>
 #include <cstddef>
 
-#include "luaconf.h"
+#define LUA_ROOT "/usr/local/"
+#define LUA_LDIR LUA_ROOT "share/lua/5.1/"
+#define LUA_CDIR LUA_ROOT "lib/lua/5.1/"
+#define LUA_PATH_DEFAULT                                                       \
+    "./?.lua;" LUA_LDIR "?.lua;" LUA_LDIR "?/init.lua;" LUA_CDIR               \
+    "?.lua;" LUA_CDIR "?/init.lua"
+#define LUA_CPATH_DEFAULT "./?.so;" LUA_CDIR "?.so;" LUA_CDIR "loadall.so"
+
+#define LUA_DIRSEP "/"
+#define LUA_PATHSEP ";"
+#define LUA_PATH_MARK "?"
+#define LUA_EXECDIR "!"
+#define LUA_IGMARK "-"
+
+#define LUA_INTEGER ptrdiff_t
+#define LUA_NUMBER double
+
+#define LUA_QL(x) "'" x "'"
+#define LUA_QS LUA_QL("%s")
+
+#define LUA_IDSIZE 60
+#define LUA_MAXINPUT 512
+#define LUA_MAXCAPTURES 32
+
+#define LUA_PROMPT "> "
+#define LUA_PROMPT2 ">> "
+#define LUA_PROGNAME "lua"
+
+#include <cstdio>
+#include <readline/history.h>
+#include <readline/readline.h>
+#define lua_readline(L, b, p) ((void)L, ((b) = readline(p)) != nullptr)
+#define lua_saveline(L, idx)                                                   \
+    if (lua_strlen(L, idx) > 0)            /* non-empty line? */               \
+        add_history(lua_tostring(L, idx)); /* add it to history */
+#define lua_freeline(L, b) ((void)L, free(b))
+
+#define LUAI_GCPAUSE 200 /* 200% (wait memory to double before next GC) */
+#define LUAI_GCMUL 200   /* GC runs 'twice the speed' of memory allocation */
+
+#define LUAI_UINT32 unsigned int
+#define LUAI_INT32 int
+#define LUAI_UMEM size_t
+#define LUAI_MEM ptrdiff_t
+
+#define LUAI_MAXCALLS 20000
+#define LUAI_MAXCSTACK 2048
+#define LUAI_MAXCCALLS 200
+#define LUAI_MAXVARS 200
+#define LUAI_MAXUPVALUES 60
+
+#define LUAL_BUFFERSIZE BUFSIZ
+
+#define LUA_NUMBER_SCAN "%lf"
+#define LUA_NUMBER_FMT "%.14g"
+#define lua_number2str(s, n) sprintf((s), LUA_NUMBER_FMT, (n))
+#define LUAI_MAXNUMBER2STR 32 /* 16 digits, sign, point, and \0 */
+#define lua_str2number(s, p) strtod((s), (p))
+
+#if defined(LUA_CORE)
+#include <cmath>
+#define luai_numadd(a, b) ((a) + (b))
+#define luai_numsub(a, b) ((a) - (b))
+#define luai_nummul(a, b) ((a) * (b))
+#define luai_numdiv(a, b) ((a) / (b))
+#define luai_nummod(a, b) ((a)-floor((a) / (b)) * (b))
+#define luai_numpow(a, b) (pow(a, b))
+#define luai_numunm(a) (-(a))
+#define luai_numeq(a, b) ((a) == (b))
+#define luai_numlt(a, b) ((a) < (b))
+#define luai_numle(a, b) ((a) <= (b))
+#define luai_numisnan(a) (!luai_numeq((a), (a)))
+#endif
+
+#define lua_number2int(i, d) ((i) = (int)(d))
+#define lua_number2integer(i, d) ((i) = (lua_Integer)(d))
+
+#define LUAI_TRY(L, c, a)                                                      \
+    try {                                                                      \
+        a                                                                      \
+    } catch (...) {                                                            \
+        if ((c)->status == 0)                                                  \
+            (c)->status = -1;                                                  \
+    }
+#define LUAI_THROW(L, c) throw(c)
+
+#if defined(loslib_c)
+
+#include <unistd.h>
+#define LUA_TMPNAMBUFSIZE 32
+#define lua_tmpnam(b, e)                                                       \
+    {                                                                          \
+        strcpy(b, "/tmp/lua_XXXXXX");                                          \
+        e = mkstemp(b);                                                        \
+        if (e != -1)                                                           \
+            close(e);                                                          \
+        e = (e == -1);                                                         \
+    }
+
+#endif
+
+#define lua_popen(L, c, m) ((void)L, popen(c, m))
+#define lua_pclose(L, file) ((void)L, (pclose(file) != -1))
+
+#define LUAI_EXTRASPACE 0
+
+#define LUA_INTFRMLEN "l"
+#define LUA_INTFRM_T long
 
 #define LUA_VERSION "Lua 5.1"
 #define LUA_VERSION_NUM 501
@@ -77,6 +178,10 @@ using lua_Alloc = void *(*)(void *ud, void *ptr, size_t osize, size_t nsize);
 ** generic extra include file
 */
 #define LUA_DEBUG
+#define LUA_API extern
+#define LUALIB_API LUA_API
+#define LUAI_FUNC extern
+#define LUAI_DATA extern
 
 #include <cassert>
 
@@ -88,6 +193,8 @@ using lua_Number = LUA_NUMBER;
 
 /* type for integer functions */
 using lua_Integer = LUA_INTEGER;
+
+#define lua_open luaL_newstate
 
 /*
 ** state manipulation
@@ -300,7 +407,7 @@ struct lua_Debug {
 };
 
 /* Functions to be called by the debuger in specific events */
-typedef void (*lua_Hook)(lua_State *L, lua_Debug *ar);
+using lua_Hook = void (*)(lua_State *L, lua_Debug *ar);
 
 LUA_API int lua_getstack(lua_State *L, int level, lua_Debug *ar);
 LUA_API int lua_getinfo(lua_State *L, const char *what, lua_Debug *ar);

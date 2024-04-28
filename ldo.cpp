@@ -1,9 +1,3 @@
-/*
-** $Id: ldo.c,v 2.36 2005/10/23 17:52:42 roberto Exp roberto $
-** Stack and Call structure of Lua
-** See Copyright Notice in lua.h
-*/
-
 #include <csetjmp>
 #include <cstdlib>
 #include <cstring>
@@ -219,16 +213,13 @@ static StkId tryfuncTM(lua_State *L, StkId func) {
 #define inc_ci(L) ((L->ci == L->end_ci) ? growCI(L) : (++L->ci))
 
 int luaD_precall(lua_State *L, StkId func, int nresults) {
-    LClosure *cl;
-    ptrdiff_t funcr;
     if (!ttisfunction(func))       /* `func' is not a function? */
         func = tryfuncTM(L, func); /* check the `function' tag method */
-    funcr = savestack(L, func);
-    cl = &clvalue(func)->l;
+    ptrdiff_t funcr = savestack(L, func);
+    LClosure *cl = &clvalue(func)->l;
     L->ci->savedpc = L->savedpc;
     if (!cl->isC) { /* Lua function? prepare its call */
-        CallInfo *ci;
-        StkId st, base;
+        StkId base;
         Proto *p = cl->p;
         luaD_checkstack(L, p->maxstacksize);
         func = restorestack(L, funcr);
@@ -242,14 +233,14 @@ int luaD_precall(lua_State *L, StkId func, int nresults) {
             func =
                 restorestack(L, funcr); /* previous call may change the stack */
         }
-        ci = inc_ci(L); /* now `enter' new function */
+        CallInfo *ci = inc_ci(L); /* now `enter' new function */
         ci->func = func;
         L->base = ci->base = base;
         ci->top = L->base + p->maxstacksize;
         L->savedpc = p->code; /* starting point */
         ci->tailcalls = 0;
         ci->nresults = nresults;
-        for (st = L->top; st < ci->top; st++)
+        for (StkId st = L->top; st < ci->top; st++)
             setnilvalue(st);
         L->top = ci->top;
         if (L->hookmask & LUA_MASKCALL) {
@@ -259,10 +250,8 @@ int luaD_precall(lua_State *L, StkId func, int nresults) {
         }
         return PCRLUA;
     } else { /* if is a C function, call it */
-        CallInfo *ci;
-        int n;
         luaD_checkstack(L, LUA_MINSTACK); /* ensure minimum stack size */
-        ci = inc_ci(L);                   /* now `enter' new function */
+        CallInfo *ci = inc_ci(L);                   /* now `enter' new function */
         ci->func = restorestack(L, funcr);
         L->base = ci->base = ci->func + 1;
         ci->top = L->top + LUA_MINSTACK;
@@ -270,7 +259,7 @@ int luaD_precall(lua_State *L, StkId func, int nresults) {
         if (L->hookmask & LUA_MASKCALL)
             luaD_callhook(L, LUA_HOOKCALL, -1);
 
-        n = (*curr_func(L)->c.f)(L); /* do the actual call */
+        int n = (*curr_func(L)->c.f)(L); /* do the actual call */
 
         if (n < 0) /* yielding? */
             return PCRYIELD;

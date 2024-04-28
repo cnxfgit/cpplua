@@ -1,12 +1,5 @@
-/*
-** $Id: lauxlib.c,v 1.157 2005/12/29 15:32:11 roberto Exp roberto $
-** Auxiliary functions for building Lua libraries
-** See Copyright Notice in lua.h
-*/
-
 #include <cctype>
 #include <cerrno>
-#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -409,7 +402,7 @@ struct LoadF {
 
 static const char *getF(lua_State *L, void *ud, size_t *size) {
     LoadF *lf = (LoadF *)ud;
-    (void)L;
+    UNUSED(L);
     if (lf->extraline) {
         lf->extraline = 0;
         *size = 1;

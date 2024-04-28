@@ -1,9 +1,3 @@
-/*
-** $Id: ltm.h,v 2.5 2005/05/20 15:53:42 roberto Exp roberto $
-** Tag methods
-** See Copyright Notice in lua.h
-*/
-
 #ifndef ltm_h
 #define ltm_h
 

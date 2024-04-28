@@ -1,9 +1,3 @@
-/*
-** $Id: lparser.c,v 2.39 2005/12/07 15:43:05 roberto Exp roberto $
-** Lua Parser
-** See Copyright Notice in lua.h
-*/
-
 #include <cstring>
 
 #define lparser_c
@@ -109,9 +103,8 @@ static void check_match(LexState *ls, int what, int who, int where) {
 }
 
 static TString *str_checkname(LexState *ls) {
-    TString *ts;
     check(ls, TK_NAME);
-    ts = ls->t.seminfo.ts;
+    TString *ts = ls->t.seminfo.ts;
     luaX_next(ls);
     return ts;
 }
@@ -561,7 +554,7 @@ static int explist1(LexState *ls, expdesc *v) {
 static void funcargs(LexState *ls, expdesc *f) {
     FuncState *fs = ls->fs;
     expdesc args;
-    int base, nparams;
+    int nparams;
     int line = ls->linenumber;
     switch (ls->t.token) {
     case '(': { /* funcargs -> `(' [ explist1 ] `)' */
@@ -593,7 +586,7 @@ static void funcargs(LexState *ls, expdesc *f) {
     }
     }
 
-    base = f->u.s.info; /* base register for call */
+    int base = f->u.s.info; /* base register for call */
     if (hasmultret(args.k))
         nparams = LUA_MULTRET; /* open call */
     else {
@@ -794,10 +787,8 @@ static const struct {
 ** where `binop' is any binary operator with a priority higher than `limit'
 */
 static BinOpr subexpr(LexState *ls, expdesc *v, unsigned int limit) {
-    BinOpr op;
-    UnOpr uop;
     enterlevel(ls);
-    uop = getunopr(ls->t.token);
+    UnOpr uop = getunopr(ls->t.token);
     if (uop != OPR_NOUNOPR) {
         luaX_next(ls);
         subexpr(ls, v, UNARY_PRIORITY);
@@ -805,7 +796,7 @@ static BinOpr subexpr(LexState *ls, expdesc *v, unsigned int limit) {
     } else
         simpleexp(ls, v);
     /* expand while operators have priorities higher than `limit' */
-    op = getbinopr(ls->t.token);
+    BinOpr op = getbinopr(ls->t.token);
     while (op != OPR_NOBINOPR && priority[op].left > limit) {
         expdesc v2;
         BinOpr nextop;
@@ -857,7 +848,7 @@ static void block(LexState *ls) {
 ** assignment
 */
 struct LHS_assign {
-    struct LHS_assign *prev;
+    LHS_assign *prev;
     expdesc v; /* variable (global, local, upvalue, or indexed) */
 };
 
@@ -867,7 +858,7 @@ struct LHS_assign {
 ** local value in a safe place and use this safe copy in the previous
 ** assignment.
 */
-static void check_conflict(LexState *ls, struct LHS_assign *lh, expdesc *v) {
+static void check_conflict(LexState *ls, LHS_assign *lh, expdesc *v) {
     FuncState *fs = ls->fs;
     int extra = fs->freereg; /* eventual position to save local variable */
     int conflict = 0;
@@ -891,12 +882,12 @@ static void check_conflict(LexState *ls, struct LHS_assign *lh, expdesc *v) {
     }
 }
 
-static void assignment(LexState *ls, struct LHS_assign *lh, int nvars) {
+static void assignment(LexState *ls,LHS_assign *lh, int nvars) {
     expdesc e;
     check_condition(ls, VLOCAL <= lh->v.k && lh->v.k <= VINDEXED,
                     "syntax error");
     if (testnext(ls, ',')) { /* assignment -> `,' primaryexp assignment */
-        struct LHS_assign nv;
+        LHS_assign nv;
         nv.prev = lh;
         primaryexp(ls, &nv.v);
         if (nv.v.k == VLOCAL)
@@ -1084,9 +1075,8 @@ static void forstat(LexState *ls, int line) {
 
 static int test_then_block(LexState *ls) {
     /* test_then_block -> [IF | ELSEIF] cond THEN block */
-    int condexit;
     luaX_next(ls); /* skip IF or ELSEIF */
-    condexit = cond(ls);
+    int condexit = cond(ls);
     checknext(ls, TK_THEN);
     block(ls); /* `then' part */
     return condexit;
@@ -1095,9 +1085,8 @@ static int test_then_block(LexState *ls) {
 static void ifstat(LexState *ls, int line) {
     /* ifstat -> IF cond THEN block {ELSEIF cond THEN block} [ELSE block] END */
     FuncState *fs = ls->fs;
-    int flist;
     int escapelist = NO_JUMP;
-    flist = test_then_block(ls); /* IF cond THEN block */
+    int flist = test_then_block(ls); /* IF cond THEN block */
     while (ls->t.token == TK_ELSEIF) {
         luaK_concat(fs, &escapelist, luaK_jump(fs));
         luaK_patchtohere(fs, flist);
@@ -1172,7 +1161,7 @@ static void funcstat(LexState *ls, int line) {
 static void exprstat(LexState *ls) {
     /* stat -> func | assignment */
     FuncState *fs = ls->fs;
-    struct LHS_assign v;
+    LHS_assign v;
     primaryexp(ls, &v.v);
     if (v.v.k == VCALL)                 /* stat -> func */
         SETARG_C(getcode(fs, &v.v), 1); /* call statement uses no results */

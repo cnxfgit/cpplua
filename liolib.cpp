@@ -1,9 +1,3 @@
-/*
-** $Id: liolib.c,v 2.71 2006/01/17 13:54:02 roberto Exp roberto $
-** Standard I/O (and system) library
-** See Copyright Notice in lua.h
-*/
-
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>

@@ -1,11 +1,3 @@
-/*
-** $Id: ldump.c,v 1.15 2006/02/16 15:53:49 lhf Exp $
-** save precompiled Lua chunks
-** See Copyright Notice in lua.h
-*/
-
-#include <cstddef>
-
 #define ldump_c
 #define LUA_CORE
 

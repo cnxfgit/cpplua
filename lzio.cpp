@@ -1,9 +1,3 @@
-/*
-** $Id: lzio.c,v 1.30 2005/05/17 19:49:15 roberto Exp roberto $
-** a generic input stream interface
-** See Copyright Notice in lua.h
-*/
-
 #include <cstring>
 
 #define lzio_c

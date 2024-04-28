@@ -1,11 +1,4 @@
-/*
-** $Id: lstrlib.c,v 1.129 2005/12/21 12:59:43 roberto Exp roberto $
-** Standard library for string operations and pattern-matching
-** See Copyright Notice in lua.h
-*/
-
 #include <cctype>
-#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -132,7 +125,7 @@ static int str_char(lua_State *L) {
 }
 
 static int writer(lua_State *L, const void *b, size_t size, void *B) {
-    (void)L;
+    UNUSED(L);
     luaL_addlstring((luaL_Buffer *)B, (const char *)b, size);
     return 0;
 }

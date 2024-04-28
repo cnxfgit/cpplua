@@ -1,9 +1,3 @@
-/*
-** $Id: lbaselib.c,v 1.188 2005/12/29 15:32:11 roberto Exp roberto $
-** Basic library
-** See Copyright Notice in lua.h
-*/
-
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>

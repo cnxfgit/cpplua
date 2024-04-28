@@ -1,9 +1,3 @@
-/*
-** $Id: loslib.c,v 1.16 2005/12/22 16:19:56 roberto Exp roberto $
-** Standard Operating System library
-** See Copyright Notice in lua.h
-*/
-
 #include <cerrno>
 #include <clocale>
 #include <cstdlib>

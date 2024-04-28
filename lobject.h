@@ -1,9 +1,3 @@
-/*
-** $Id: lobject.h,v 2.19 2006/01/10 12:51:53 roberto Exp roberto $
-** Type definitions for Lua objects
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lobject_h
 #define lobject_h
 
@@ -28,7 +22,6 @@
 ** Union of all collectable objects
 */
 union GCObject;
-
 
 struct Table;
 
@@ -190,7 +183,7 @@ struct TValue {
 
 #define iscollectable(o) (ttype(o) >= LUA_TSTRING)
 
-typedef TValue *StkId; /* index to stack elements */
+using StkId = TValue *; /* index to stack elements */
 
 /*
 ** String headers for string table
@@ -259,7 +252,6 @@ struct LocVar {
 /*
 ** Upvalues
 */
-
 struct UpVal {
     CommonHeader;
     TValue *v; /* points to stack or to its own value */
@@ -275,7 +267,6 @@ struct UpVal {
 /*
 ** Closures
 */
-
 #define ClosureHeader                                                          \
     CommonHeader;                                                              \
     lu_byte isC;                                                               \
@@ -306,7 +297,6 @@ union Closure {
 /*
 ** Tables
 */
-
 union TKey {
     struct {
         Value value;

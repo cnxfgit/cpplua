@@ -1,9 +1,3 @@
-/*
-** $Id: lmathlib.c,v 1.66 2005/08/15 14:12:32 roberto Exp roberto $
-** Standard mathematical library
-** See Copyright Notice in lua.h
-*/
-
 #include <cmath>
 #include <cstdlib>
 

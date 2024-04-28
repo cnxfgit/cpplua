@@ -1,9 +1,3 @@
-/*
-** $Id: lcode.c,v 2.23 2005/11/25 13:29:32 roberto Exp roberto $
-** Code generator for Lua
-** See Copyright Notice in lua.h
-*/
-
 #include <cstdlib>
 
 #define LUA_CORE
@@ -48,9 +42,8 @@ void luaK_nil(FuncState *fs, int from, int n) {
 
 int luaK_jump(FuncState *fs) {
     int jpc = fs->jpc; /* save list of jumps to here */
-    int j;
     fs->jpc = NO_JUMP;
-    j = luaK_codeAsBx(fs, OP_JMP, 0, NO_JUMP);
+    int j = luaK_codeAsBx(fs, OP_JMP, 0, NO_JUMP);
     luaK_concat(fs, &j, jpc); /* keep them on hold */
     return j;
 }

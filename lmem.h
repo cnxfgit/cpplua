@@ -1,9 +1,3 @@
-/*
-** $Id: lmem.h,v 1.30 2005/03/18 16:38:02 roberto Exp roberto $
-** Interface to Memory Manager
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lmem_h
 #define lmem_h
 

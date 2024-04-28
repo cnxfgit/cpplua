@@ -1,10 +1,4 @@
 /*
-** $Id: ltable.c,v 2.31 2006/01/10 13:13:06 roberto Exp roberto $
-** Lua tables (hash)
-** See Copyright Notice in lua.h
-*/
-
-/*
 ** Implementation of tables (aka arrays, objects, or hash tables).
 ** Tables keep its elements in two parts: an array part and a hash part.
 ** Non-negative integer keys are all candidates to be kept in the array
@@ -16,7 +10,6 @@
 ** to it), then the colliding element is in its own main position.
 ** Hence even when the load factor reaches 100%, performance remains good.
 */
-
 #include <cmath>
 #include <cstring>
 

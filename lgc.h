@@ -1,9 +1,3 @@
-/*
-** $Id: lgc.h,v 2.14 2005/06/07 18:53:45 roberto Exp roberto $
-** Garbage Collector
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lgc_h
 #define lgc_h
 

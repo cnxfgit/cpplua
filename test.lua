@@ -25,3 +25,9 @@
 -- a:print()
 
 print(arg[12])
+
+a = [==[
+    asda
+    asda
+]==]
+print(a)

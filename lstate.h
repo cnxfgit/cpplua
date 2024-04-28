@@ -1,9 +1,3 @@
-/*
-** $Id: lstate.h,v 2.23 2005/07/09 13:22:34 roberto Exp roberto $
-** Global State
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lstate_h
 #define lstate_h
 

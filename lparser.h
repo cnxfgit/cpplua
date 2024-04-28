@@ -1,9 +1,3 @@
-/*
-** $Id: lparser.h,v 1.55 2005/04/25 19:24:10 roberto Exp roberto $
-** Lua Parser
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lparser_h
 #define lparser_h
 
@@ -16,7 +10,7 @@
 ** Expression descriptor
 */
 
-typedef enum {
+enum expkind{
     VVOID, /* no value */
     VNIL,
     VTRUE,
@@ -32,7 +26,7 @@ typedef enum {
     VNONRELOC,  /* info = result register */
     VCALL,      /* info = instruction pc */
     VVARARG     /* info = instruction pc */
-} expkind;
+};
 
 struct expdesc {
     expkind k;

@@ -1,9 +1,3 @@
-/*
-** $Id: lstring.c,v 2.7 2005/02/18 12:40:02 roberto Exp roberto $
-** String table (keeps all strings handled by Lua)
-** See Copyright Notice in lua.h
-*/
-
 #include <cstring>
 
 #define lstring_c

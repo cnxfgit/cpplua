@@ -1,9 +1,3 @@
-/*
-** $Id: lualib.h,v 1.35 2005/08/10 18:06:58 roberto Exp roberto $
-** Lua standard libraries
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lualib_h
 #define lualib_h
 

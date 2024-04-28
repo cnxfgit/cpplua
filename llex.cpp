@@ -1,9 +1,3 @@
-/*
-** $Id: llex.c,v 2.18 2006/01/23 20:06:19 roberto Exp roberto $
-** Lexical Analyzer
-** See Copyright Notice in lua.h
-*/
-
 #include <cctype>
 #include <clocale>
 #include <cstring>

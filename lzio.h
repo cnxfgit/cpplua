@@ -1,9 +1,3 @@
-/*
-** $Id: lzio.h,v 1.20 2005/04/25 19:24:10 roberto Exp roberto $
-** Buffered streams
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lzio_h
 #define lzio_h
 

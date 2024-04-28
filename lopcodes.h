@@ -1,9 +1,3 @@
-/*
-** $Id: lopcodes.h,v 1.123 2005/10/23 17:37:55 roberto Exp roberto $
-** Opcodes for Lua virtual machine
-** See Copyright Notice in lua.h
-*/
-
 #ifndef lopcodes_h
 #define lopcodes_h
 

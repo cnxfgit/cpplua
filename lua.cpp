@@ -1,9 +1,3 @@
-/*
-** $Id: lua.c,v 1.156 2005/12/29 12:30:16 roberto Exp roberto $
-** Lua stand-alone interpreter
-** See Copyright Notice in lua.h
-*/
-
 #include "lua.h"
 
 #include <csignal>
@@ -14,12 +8,15 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#include <unistd.h>
+#define lua_stdin_is_tty() isatty(0)
+
 static lua_State *globalL = nullptr;
 
 static const char *progname = LUA_PROGNAME;
 
 static void lstop(lua_State *L, lua_Debug *ar) {
-    (void)ar; /* unused arg. */
+    UNUSED(ar); /* unused arg. */
     lua_sethook(L, nullptr, 0, 0);
     luaL_error(L, "interrupted!");
 }
@@ -218,10 +215,9 @@ static void dotty(lua_State *L) {
 }
 
 static int handle_script(lua_State *L, char **argv, int n) {
-    const char *fname;
     int narg = getargs(L, argv, n); /* collect arguments */
     lua_setglobal(L, "arg");
-    fname = argv[n];
+    const char *fname = argv[n];
     if (strcmp(fname, "-") == 0 && strcmp(argv[n - 1], "--") != 0)
         fname = nullptr; /* stdin */
     int status = luaL_loadfile(L, fname);
@@ -308,7 +304,7 @@ struct Smain {
 };
 
 static int pmain(lua_State *L) {
-    struct Smain *s = (struct Smain *)lua_touserdata(L, 1);
+    Smain *s = (Smain *)lua_touserdata(L, 1);
     char **argv = s->argv;
 
     int has_i = 0, has_v = 0, has_e = 0;
@@ -349,16 +345,15 @@ static int pmain(lua_State *L) {
 }
 
 int main(int argc, char **argv) {
-    int status;
-    struct Smain s;
-    lua_State *L = luaL_newstate(); /* create state */
+    Smain s;
+    lua_State *L = lua_open(); /* create state */
     if (L == nullptr) {
         l_message(argv[0], "cannot create state: not enough memory");
         return EXIT_FAILURE;
     }
     s.argc = argc;
     s.argv = argv;
-    status = lua_cpcall(L, &pmain, &s);
+    int status = lua_cpcall(L, &pmain, &s);
     report(L, status);
     lua_close(L);
     return (status || s.status) ? EXIT_FAILURE : EXIT_SUCCESS;

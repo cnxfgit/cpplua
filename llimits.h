@@ -1,9 +1,3 @@
-/*
-** $Id: llimits.h,v 1.68 2005/12/22 16:19:56 roberto Exp roberto $
-** Limits, basic types, and some other `installation-dependent' definitions
-** See Copyright Notice in lua.h
-*/
-
 #ifndef llimits_h
 #define llimits_h
 
@@ -12,14 +6,14 @@
 
 #include "lua.h"
 
-typedef LUAI_UINT32 lu_int32;
+using lu_int32 = LUAI_UINT32;
 
-typedef LUAI_UMEM lu_mem;
+using lu_mem = LUAI_UMEM;
 
-typedef LUAI_MEM l_mem;
+using l_mem = LUAI_MEM;
 
 /* chars used as small naturals (so that `char' is reserved for characters) */
-typedef unsigned char lu_byte;
+using lu_byte = unsigned char;
 
 #define MAX_SIZET ((size_t)(~(size_t)0) - 2)
 
@@ -35,10 +29,14 @@ typedef unsigned char lu_byte;
 #define IntPoint(p) ((unsigned int)(lu_mem)(p))
 
 /* type to ensure maximum alignment */
-typedef LUAI_USER_ALIGNMENT_T L_Umaxalign;
+using L_Umaxalign = union Umaxalign {
+    double u;
+    void *s;
+    long l;
+};
 
 /* result of a `usual argument conversion' over lua_Number */
-typedef LUAI_UACNUMBER l_uacNumber;
+using l_uacNumber = LUA_NUMBER;
 
 #define cast(t, exp) ((t)(exp))
 #define cast_byte(i) cast(lu_byte, (i))
@@ -49,7 +47,7 @@ typedef LUAI_UACNUMBER l_uacNumber;
 ** type for virtual-machine instructions
 ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 */
-typedef lu_int32 Instruction;
+using Instruction = lu_int32;
 
 /* maximum stack for a Lua function */
 #define MAXSTACK 250
