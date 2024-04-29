@@ -56,6 +56,9 @@
 #define LUAI_MAXVARS 200
 #define LUAI_MAXUPVALUES 60
 
+/* minimum Lua stack available to a C function */
+#define LUA_MINSTACK 20
+
 #define LUAL_BUFFERSIZE BUFSIZ
 
 #define LUA_NUMBER_SCAN "%lf"
@@ -171,15 +174,11 @@ using lua_Alloc = void *(*)(void *ud, void *ptr, size_t osize, size_t nsize);
 #define LUA_TUSERDATA 7
 #define LUA_TTHREAD 8
 
-/* minimum Lua stack available to a C function */
-#define LUA_MINSTACK 20
-
 /*
 ** generic extra include file
 */
-#define LUA_DEBUG
 #define LUA_API extern
-#define LUALIB_API LUA_API
+#define LUALIB_API extern
 #define LUAI_FUNC extern
 #define LUAI_DATA extern
 
@@ -364,9 +363,6 @@ LUA_API void(lua_concat)(lua_State *L, int n);
 #define lua_getregistry(L) lua_pushvalue(L, LUA_REGISTRYINDEX)
 
 #define lua_getgccount(L) lua_gc(L, LUA_GCCOUNT, 0)
-
-#define lua_Chunkreader lua_Reader
-#define lua_Chunkwriter lua_Writer
 
 /*
 ** {======================================================================

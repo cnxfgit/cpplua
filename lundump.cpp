@@ -21,9 +21,6 @@ struct LoadState {
     const char *name;
 };
 
-#ifdef LUAC_TRUST_BINARIES
-#define IF(c, s)
-#else
 #define IF(c, s)                                                               \
     if (c)                                                                     \
     error(S, s)
@@ -32,7 +29,6 @@ static void error(LoadState *S, const char *why) {
     luaO_pushfstring(S->L, "%s: %s in precompiled chunk", S->name, why);
     luaD_throw(S->L, LUA_ERRSYNTAX);
 }
-#endif
 
 #define LoadMem(S, b, n, size) LoadBlock(S, b, (n) * (size))
 #define LoadByte(S) (lu_byte) LoadChar(S)

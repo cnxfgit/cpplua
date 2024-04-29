@@ -49,8 +49,6 @@ LUAI_FUNC int luaZ_lookahead(ZIO *z);
 
 /* --------- Private Part ------------------ */
 
-
-
 LUAI_FUNC int luaZ_fill(ZIO *z);
 
 #endif

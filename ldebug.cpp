@@ -231,9 +231,6 @@ LUA_API int lua_getinfo(lua_State *L, const char *what, lua_Debug *ar) {
 #define check(x)                                                               \
     if (!(x))                                                                  \
         return 0;
-
-#define checkjump(pt, pc) check(0 <= pc && pc < pt->sizecode)
-
 #define checkreg(pt, reg) check((reg) < (pt)->maxstacksize)
 
 static int precheck(const Proto *pt) {
@@ -430,7 +427,6 @@ static Instruction symbexec(const Proto *pt, int lastpc, int reg) {
 }
 
 #undef check
-#undef checkjump
 #undef checkreg
 
 /* }====================================================== */

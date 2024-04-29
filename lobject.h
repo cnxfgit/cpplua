@@ -272,7 +272,7 @@ struct UpVal {
     lu_byte isC;                                                               \
     lu_byte nupvalues;                                                         \
     GCObject *gclist;                                                          \
-    struct Table *env
+    Table *env
 
 struct CClosure {
     ClosureHeader;
@@ -315,7 +315,7 @@ struct Table {
     CommonHeader;
     lu_byte flags;     /* 1<<p means tagmethod(p) is not present */
     lu_byte lsizenode; /* log2 of size of `node' array */
-    struct Table *metatable;
+    Table *metatable;
     TValue *array; /* array part */
     Node *node;
     Node *lastfree; /* any free position is before this position */
