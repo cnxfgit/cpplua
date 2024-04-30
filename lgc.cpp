@@ -29,7 +29,7 @@
 #define white2gray(x) reset2bits((x)->gch.marked, WHITE0BIT, WHITE1BIT)
 #define black2gray(x) resetbit((x)->gch.marked, BLACKBIT)
 
-#define stringmark(s) reset2bits((s)->tsv.marked, WHITE0BIT, WHITE1BIT)
+#define stringmark(s) reset2bits((s)->marked, WHITE0BIT, WHITE1BIT)
 
 #define isfinalized(u) testbit((u)->marked, FINALIZEDBIT)
 #define markfinalized(u) l_setbit((u)->marked, FINALIZEDBIT)
@@ -425,11 +425,11 @@ static void GCTM(lua_State *L) {
     if (o == g->tmudata) /* last element? */
         g->tmudata = nullptr;
     else
-        g->tmudata->gch.next = udata->uv.next;
-    udata->uv.next = g->mainthread->next; /* return it to `root' list */
+        g->tmudata->gch.next = udata->next;
+    udata->next = g->mainthread->next; /* return it to `root' list */
     g->mainthread->next = o;
     makewhite(g, o);
-    tm = fasttm(L, udata->uv.metatable, TM_GC);
+    tm = fasttm(L, udata->metatable, TM_GC);
     if (tm != nullptr) {
         lu_byte oldah = L->allowhook;
         lu_mem oldt = g->GCthreshold;

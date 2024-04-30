@@ -125,9 +125,9 @@ union GCObject {
 
 /* macros to convert a GCObject into a specific value */
 #define rawgco2ts(o) (&((o)->ts))
-#define gco2ts(o) (&rawgco2ts(o)->tsv)
+#define gco2ts(o) (rawgco2ts(o))
 #define rawgco2u(o) (&((o)->u))
-#define gco2u(o) (&rawgco2u(o)->uv)
+#define gco2u(o) (rawgco2u(o))
 #define gco2cl(o) (&((o)->cl))
 #define gco2h(o) (&((o)->h))
 #define gco2p(o) (&((o)->p))

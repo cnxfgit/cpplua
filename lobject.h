@@ -76,9 +76,9 @@ struct TValue {
 #define pvalue(o) ((o)->value.p)
 #define nvalue(o) ((o)->value.n)
 #define rawtsvalue(o) (&(o)->value.gc->ts)
-#define tsvalue(o) (&rawtsvalue(o)->tsv)
+#define tsvalue(o) (rawtsvalue(o))
 #define rawuvalue(o) (&(o)->value.gc->u)
-#define uvalue(o) (&rawuvalue(o)->uv)
+#define uvalue(o) (rawuvalue(o))
 #define clvalue(o) (&(o)->value.gc->cl)
 #define hvalue(o) (&(o)->value.gc->h)
 #define bvalue(o) ((o)->value.b)
@@ -188,27 +188,21 @@ using StkId = TValue *; /* index to stack elements */
 /*
 ** String headers for string table
 */
-union TString {
-    L_Umaxalign dummy; /* ensures maximum alignment for strings */
-    struct {
-        CommonHeader;
-        lu_byte reserved;
-        unsigned int hash;
-        size_t len;
-    } tsv;
+struct TString {
+    CommonHeader;
+    lu_byte reserved;
+    unsigned int hash;
+    size_t len;
 };
 
 #define getstr(ts) cast(const char *, (ts) + 1)
 #define svalue(o) getstr(tsvalue(o))
 
-union Udata {
-    L_Umaxalign dummy; /* ensures maximum alignment for `local' udata */
-    struct {
-        CommonHeader;
-        Table *metatable;
-        Table *env;
-        size_t len;
-    } uv;
+struct Udata {
+    CommonHeader;
+    Table *metatable;
+    Table *env;
+    size_t len;
 };
 
 /*

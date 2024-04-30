@@ -28,13 +28,6 @@ using lu_byte = unsigned char;
 */
 #define IntPoint(p) ((unsigned int)(lu_mem)(p))
 
-/* type to ensure maximum alignment */
-using L_Umaxalign = union Umaxalign {
-    double u;
-    void *s;
-    long l;
-};
-
 /* result of a `usual argument conversion' over lua_Number */
 using l_uacNumber = LUA_NUMBER;
 

@@ -43,16 +43,16 @@ static TString *newlstr(lua_State *L, const char *str, size_t l,
         luaM_toobig(L);
     TString *ts = cast(
         TString *, luaM_malloc(L, (l + 1) * sizeof(char) + sizeof(TString)));
-    ts->tsv.len = l;
-    ts->tsv.hash = h;
-    ts->tsv.marked = luaC_white(G(L));
-    ts->tsv.tt = LUA_TSTRING;
-    ts->tsv.reserved = 0;
+    ts->len = l;
+    ts->hash = h;
+    ts->marked = luaC_white(G(L));
+    ts->tt = LUA_TSTRING;
+    ts->reserved = 0;
     memcpy(ts + 1, str, l * sizeof(char));
     ((char *)(ts + 1))[l] = '\0'; /* ending 0 */
     stringtable *tb = &G(L)->strt;
     h = lmod(h, tb->size);
-    ts->tsv.next = tb->hash[h]; /* chain new entry */
+    ts->next = tb->hash[h]; /* chain new entry */
     tb->hash[h] = obj2gco(ts);
     tb->nuse++;
     if (tb->nuse > cast(lu_int32, tb->size) && tb->size <= MAX_INT / 2)
@@ -70,7 +70,7 @@ TString *luaS_newlstr(lua_State *L, const char *str, size_t l) {
     for (GCObject *o = G(L)->strt.hash[lmod(h, G(L)->strt.size)]; o != nullptr;
          o = o->gch.next) {
         TString *ts = rawgco2ts(o);
-        if (ts->tsv.len == l && (memcmp(str, getstr(ts), l) == 0)) {
+        if (ts->len == l && (memcmp(str, getstr(ts), l) == 0)) {
             /* string may be dead */
             if (isdead(G(L), o))
                 changewhite(o);
@@ -85,13 +85,13 @@ Udata *luaS_newudata(lua_State *L, size_t s, Table *e) {
     if (s > MAX_SIZET - sizeof(Udata))
         luaM_toobig(L);
     u = cast(Udata *, luaM_malloc(L, s + sizeof(Udata)));
-    u->uv.marked = luaC_white(G(L)); /* is not finalized */
-    u->uv.tt = LUA_TUSERDATA;
-    u->uv.len = s;
-    u->uv.metatable = nullptr;
-    u->uv.env = e;
+    u->marked = luaC_white(G(L)); /* is not finalized */
+    u->tt = LUA_TUSERDATA;
+    u->len = s;
+    u->metatable = nullptr;
+    u->env = e;
     /* chain it on udata list (after main thread) */
-    u->uv.next = G(L)->mainthread->next;
+    u->next = G(L)->mainthread->next;
     G(L)->mainthread->next = obj2gco(u);
     return u;
 }

@@ -17,7 +17,8 @@
         "sstream": "cpp",
         "type_traits": "cpp",
         "utility": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "tuple": "cpp"
     },
     "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, BreakBeforeBraces: Attach, IndentWidth: 4, TabWidth: 4}",
     "commentTranslate.targetLanguage": "zh-CN",
