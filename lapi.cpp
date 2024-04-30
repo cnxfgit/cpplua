@@ -82,33 +82,26 @@ LUA_API int lua_checkstack(lua_State *L, int size) {
 }
 
 LUA_API void lua_xmove(lua_State *from, lua_State *to, int n) {
-    int i;
     if (from == to)
         return;
 
     from->top -= n;
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         setobj2s(to, to->top++, from->top + i);
     }
 }
 
 LUA_API lua_CFunction lua_atpanic(lua_State *L, lua_CFunction panicf) {
-    lua_CFunction old;
-
-    old = G(L)->panic;
+    lua_CFunction old = G(L)->panic;
     G(L)->panic = panicf;
-
     return old;
 }
 
 LUA_API lua_State *lua_newthread(lua_State *L) {
-    lua_State *L1;
-
     luaC_checkGC(L);
-    L1 = luaE_newthread(L);
+    lua_State *L1 = luaE_newthread(L);
     setthvalue(L, L->top, L1);
     api_incr_top(L);
-
     return L1;
 }
 
@@ -129,9 +122,7 @@ LUA_API void lua_settop(lua_State *L, int idx) {
 }
 
 LUA_API void lua_remove(lua_State *L, int idx) {
-    StkId p;
-
-    p = index2adr(L, idx);
+    StkId p = index2adr(L, idx);
     while (++p < L->top)
         setobjs2s(L, p - 1, p);
     L->top--;
@@ -139,17 +130,13 @@ LUA_API void lua_remove(lua_State *L, int idx) {
 
 LUA_API void lua_insert(lua_State *L, int idx) {
     StkId p = index2adr(L, idx);
-    StkId q;
-    
-    for (q = L->top; q > p; q--)
+    for (StkId q = L->top; q > p; q--)
         setobjs2s(L, q, q - 1);
     setobjs2s(L, p, L->top);
 }
 
 LUA_API void lua_replace(lua_State *L, int idx) {
-    StkId o;
-
-    o = index2adr(L, idx);
+    StkId o = index2adr(L, idx);
     if (idx == LUA_ENVIRONINDEX) {
         Closure *func = curr_func(L);
         func->c.env = hvalue(L->top - 1);
@@ -163,7 +150,6 @@ LUA_API void lua_replace(lua_State *L, int idx) {
 }
 
 LUA_API void lua_pushvalue(lua_State *L, int idx) {
-
     setobj2s(L, L->top, index2adr(L, idx));
     api_incr_top(L);
 }
@@ -212,28 +198,20 @@ LUA_API int lua_rawequal(lua_State *L, int index1, int index2) {
 }
 
 LUA_API int lua_equal(lua_State *L, int index1, int index2) {
-    StkId o1, o2;
-    int i;
     /* may call tag method */
-    o1 = index2adr(L, index1);
-    o2 = index2adr(L, index2);
-    i = (o1 == luaO_nilobject || o2 == luaO_nilobject) ? 0
+    StkId o1 = index2adr(L, index1);
+    StkId o2 = index2adr(L, index2);
+    return (o1 == luaO_nilobject || o2 == luaO_nilobject) ? 0
                                                        : equalobj(L, o1, o2);
-
-    return i;
 }
 
 LUA_API int lua_lessthan(lua_State *L, int index1, int index2) {
-    StkId o1, o2;
-    int i;
     /* may call tag method */
-    o1 = index2adr(L, index1);
-    o2 = index2adr(L, index2);
-    i = (o1 == luaO_nilobject || o2 == luaO_nilobject)
+    StkId o1 = index2adr(L, index1);
+    StkId o2 = index2adr(L, index2);
+    return (o1 == luaO_nilobject || o2 == luaO_nilobject)
             ? 0
             : luaV_lessthan(L, o1, o2);
-
-    return i;
 }
 
 LUA_API lua_Number lua_tonumber(lua_State *L, int idx) {
@@ -269,7 +247,6 @@ LUA_API const char *lua_tolstring(lua_State *L, int idx, size_t *len) {
         if (!luaV_tostring(L, o)) { /* conversion failed? */
             if (len != nullptr)
                 *len = 0;
-
             return nullptr;
         }
         luaC_checkGC(L);
@@ -290,11 +267,8 @@ LUA_API size_t lua_objlen(lua_State *L, int idx) {
     case LUA_TTABLE:
         return luaH_getn(hvalue(o));
     case LUA_TNUMBER: {
-        size_t l;
         /* `luaV_tostring' may create a new string */
-        l = (luaV_tostring(L, o) ? tsvalue(o)->len : 0);
-
-        return l;
+        return cast(size_t, (luaV_tostring(L, o) ? tsvalue(o)->len : 0));
     }
     default:
         return 0;
@@ -374,31 +348,25 @@ LUA_API void lua_pushstring(lua_State *L, const char *s) {
 
 LUA_API const char *lua_pushvfstring(lua_State *L, const char *fmt,
                                      va_list argp) {
-    const char *ret;
-
     luaC_checkGC(L);
-    ret = luaO_pushvfstring(L, fmt, argp);
-
+    const char *ret = luaO_pushvfstring(L, fmt, argp);
     return ret;
 }
 
 LUA_API const char *lua_pushfstring(lua_State *L, const char *fmt, ...) {
-    const char *ret;
     va_list argp;
 
     luaC_checkGC(L);
     va_start(argp, fmt);
-    ret = luaO_pushvfstring(L, fmt, argp);
+    const char *ret = luaO_pushvfstring(L, fmt, argp);
     va_end(argp);
 
     return ret;
 }
 
 LUA_API void lua_pushcclosure(lua_State *L, lua_CFunction fn, int n) {
-    Closure *cl;
-
     luaC_checkGC(L);
-    cl = luaF_newCclosure(L, n, getcurrenv(L));
+    Closure *cl = luaF_newCclosure(L, n, getcurrenv(L));
     cl->c.f = fn;
     L->top -= n;
     while (n--)
@@ -421,7 +389,6 @@ LUA_API void lua_pushlightuserdata(lua_State *L, void *p) {
 LUA_API int lua_pushthread(lua_State *L) {
     setthvalue(L, L->top, L);
     api_incr_top(L);
-
     return (G(L)->mainthread == L);
 }
 
@@ -430,33 +397,26 @@ LUA_API int lua_pushthread(lua_State *L) {
 */
 
 LUA_API void lua_gettable(lua_State *L, int idx) {
-    StkId t;
-
-    t = index2adr(L, idx);
+    StkId t = index2adr(L, idx);
     luaV_gettable(L, t, L->top - 1, L->top - 1);
 }
 
 LUA_API void lua_getfield(lua_State *L, int idx, const char *k) {
-    StkId t;
     TValue key;
 
-    t = index2adr(L, idx);
+    StkId t = index2adr(L, idx);
     setsvalue(L, &key, luaS_new(L, k));
     luaV_gettable(L, t, &key, L->top);
     api_incr_top(L);
 }
 
 LUA_API void lua_rawget(lua_State *L, int idx) {
-    StkId t;
-
-    t = index2adr(L, idx);
+    StkId t = index2adr(L, idx);
     setobj2s(L, L->top - 1, luaH_get(hvalue(t), L->top - 1));
 }
 
 LUA_API void lua_rawgeti(lua_State *L, int idx, int n) {
-    StkId o;
-
-    o = index2adr(L, idx);
+    StkId o = index2adr(L, idx);
     setobj2s(L, L->top, luaH_getnum(hvalue(o), n));
     api_incr_top(L);
 }
@@ -468,11 +428,10 @@ LUA_API void lua_createtable(lua_State *L, int narray, int nrec) {
 }
 
 LUA_API int lua_getmetatable(lua_State *L, int objindex) {
-    const TValue *obj;
     Table *mt = nullptr;
     int res;
 
-    obj = index2adr(L, objindex);
+    const TValue *obj = index2adr(L, objindex);
     switch (ttype(obj)) {
     case LUA_TTABLE:
         mt = hvalue(obj)->metatable;
@@ -496,9 +455,7 @@ LUA_API int lua_getmetatable(lua_State *L, int objindex) {
 }
 
 LUA_API void lua_getfenv(lua_State *L, int idx) {
-    StkId o;
-
-    o = index2adr(L, idx);
+    StkId o = index2adr(L, idx);
     switch (ttype(o)) {
     case LUA_TFUNCTION:
         sethvalue(L, L->top, clvalue(o)->c.env);
@@ -619,9 +576,7 @@ LUA_API int lua_setfenv(lua_State *L, int idx) {
     }
 
 LUA_API void lua_call(lua_State *L, int nargs, int nresults) {
-    StkId func;
-
-    func = L->top - (nargs + 1);
+    StkId func = L->top - (nargs + 1);
     luaD_call(L, func, nresults);
     adjustresults(L, nresults);
 }
@@ -679,13 +634,9 @@ static void f_Ccall(lua_State *L, void *ud) {
 
 LUA_API int lua_cpcall(lua_State *L, lua_CFunction func, void *ud) {
     CCallS c;
-    int status;
-
     c.func = func;
     c.ud = ud;
-    status = luaD_pcall(L, f_Ccall, &c, savestack(L, L->top), 0);
-
-    return status;
+    return luaD_pcall(L, f_Ccall, &c, savestack(L, L->top), 0);
 }
 
 LUA_API int lua_load(lua_State *L, lua_Reader reader, void *data,
@@ -699,9 +650,7 @@ LUA_API int lua_load(lua_State *L, lua_Reader reader, void *data,
 
 LUA_API int lua_dump(lua_State *L, lua_Writer writer, void *data) {
     int status;
-    TValue *o;
-
-    o = L->top - 1;
+    TValue *o = L->top - 1;
     if (isLfunction(o))
         status = luaU_dump(L, clvalue(o)->l.p, writer, data, 0);
     else
@@ -718,9 +667,7 @@ LUA_API int lua_status(lua_State *L) { return L->status; }
 
 LUA_API int lua_gc(lua_State *L, int what, int data) {
     int res = 0;
-    global_State *g;
-
-    g = G(L);
+    global_State *g = G(L);
     switch (what) {
     case LUA_GCSTOP: {
         g->GCthreshold = MAX_LUMEM;
@@ -775,19 +722,14 @@ LUA_API int lua_gc(lua_State *L, int what, int data) {
 /*
 ** miscellaneous functions
 */
-
 LUA_API int lua_error(lua_State *L) {
     luaG_errormsg(L);
-
     return 0; /* to avoid warnings */
 }
 
 LUA_API int lua_next(lua_State *L, int idx) {
-    StkId t;
-    int more;
-
-    t = index2adr(L, idx);
-    more = luaH_next(L, hvalue(t), L->top - 1);
+    StkId t = index2adr(L, idx);
+    int more = luaH_next(L, hvalue(t), L->top - 1);
     if (more) {
         api_incr_top(L);
     } else           /* no more elements */
@@ -797,7 +739,6 @@ LUA_API int lua_next(lua_State *L, int idx) {
 }
 
 LUA_API void lua_concat(lua_State *L, int n) {
-
     if (n >= 2) {
         luaC_checkGC(L);
         luaV_concat(L, n, cast_int(L->top - L->base) - 1);
@@ -810,21 +751,17 @@ LUA_API void lua_concat(lua_State *L, int n) {
 }
 
 LUA_API void *lua_newuserdata(lua_State *L, size_t size) {
-    Udata *u;
-
     luaC_checkGC(L);
-    u = luaS_newudata(L, size, getcurrenv(L));
+    Udata *u = luaS_newudata(L, size, getcurrenv(L));
     setuvalue(L, L->top, u);
     api_incr_top(L);
-
     return u + 1;
 }
 
 static const char *aux_upvalue(StkId fi, int n, TValue **val) {
-    Closure *f;
     if (!ttisfunction(fi))
         return nullptr;
-    f = clvalue(fi);
+    Closure *f = clvalue(fi);
     if (f->c.isC) {
         if (!(1 <= n && n <= f->c.nupvalues))
             return nullptr;
@@ -840,25 +777,19 @@ static const char *aux_upvalue(StkId fi, int n, TValue **val) {
 }
 
 LUA_API const char *lua_getupvalue(lua_State *L, int funcindex, int n) {
-    const char *name;
     TValue *val;
-
-    name = aux_upvalue(index2adr(L, funcindex), n, &val);
+    const char *name = aux_upvalue(index2adr(L, funcindex), n, &val);
     if (name) {
         setobj2s(L, L->top, val);
         api_incr_top(L);
     }
-
     return name;
 }
 
 LUA_API const char *lua_setupvalue(lua_State *L, int funcindex, int n) {
-    const char *name;
     TValue *val;
-    StkId fi;
-
-    fi = index2adr(L, funcindex);
-    name = aux_upvalue(fi, n, &val);
+    StkId fi = index2adr(L, funcindex);
+    const char *name = aux_upvalue(fi, n, &val);
     if (name) {
         L->top--;
         setobj(L, val, L->top);

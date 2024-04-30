@@ -42,7 +42,7 @@ void luaZ_init(lua_State *L, ZIO *z, lua_Reader reader, void *data) {
     z->p = nullptr;
 }
 
-/* --------------------------------------------------------------- read --- */
+/* -------------------------- read ------------------------- */
 size_t luaZ_read(ZIO *z, void *b, size_t n) {
     while (n) {
         size_t m;

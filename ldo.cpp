@@ -347,8 +347,6 @@ static int resume_error(lua_State *L, const char *msg) {
 }
 
 LUA_API int lua_resume(lua_State *L, int nargs) {
-    int status;
-
     if (L->status != LUA_YIELD) {
         if (L->status != 0)
             return resume_error(L, "cannot resume dead coroutine");
@@ -356,7 +354,7 @@ LUA_API int lua_resume(lua_State *L, int nargs) {
             return resume_error(L, "cannot resume non-suspended coroutine");
     }
 
-    status = luaD_rawrunprotected(L, resume, L->top - nargs);
+    int status = luaD_rawrunprotected(L, resume, L->top - nargs);
     if (status != 0) {                 /* error? */
         L->status = cast_byte(status); /* mark thread as `dead' */
         luaD_seterrorobj(L, status, L->top);

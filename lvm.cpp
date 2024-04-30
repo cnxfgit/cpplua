@@ -737,7 +737,6 @@ reentry: /* entry point */
         }
         case OP_VARARG: {
             int b = GETARG_B(i) - 1;
-            int j;
             CallInfo *ci = L->ci;
             int n = cast_int(ci->base - ci->func) - cl->p->numparams - 1;
             if (b == LUA_MULTRET) {
@@ -746,7 +745,7 @@ reentry: /* entry point */
                 b = n;
                 L->top = ra + n;
             }
-            for (j = 0; j < b; j++) {
+            for (int j = 0; j < b; j++) {
                 if (j < n) {
                     setobjs2s(L, ra + j, ci->base - n + j);
                 } else {

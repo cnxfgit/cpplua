@@ -195,7 +195,6 @@ static int auxgetinfo(lua_State *L, const char *what, lua_Debug *ar, Closure *f,
 }
 
 LUA_API int lua_getinfo(lua_State *L, const char *what, lua_Debug *ar) {
-    int status;
     Closure *f = nullptr;
     CallInfo *ci = nullptr;
 
@@ -208,7 +207,7 @@ LUA_API int lua_getinfo(lua_State *L, const char *what, lua_Debug *ar) {
         ci = L->base_ci + ar->i_ci;
         f = clvalue(ci->func);
     }
-    status = auxgetinfo(L, what, ar, f, ci);
+    int status = auxgetinfo(L, what, ar, f, ci);
     if (strchr(what, 'f')) {
         if (f == nullptr)
             setnilvalue(L->top);
@@ -488,11 +487,10 @@ static const char *getobjname(lua_State *L, CallInfo *ci, int stackpos,
 }
 
 static const char *getfuncname(lua_State *L, CallInfo *ci, const char **name) {
-    Instruction i;
     if ((isLua(ci) && ci->tailcalls > 0) || !isLua(ci - 1))
         return nullptr; /* calling function is not Lua (or is unknown) */
     ci--;               /* calling function */
-    i = ci_func(ci)->l.p->code[currentpc(L, ci)];
+    Instruction i = ci_func(ci)->l.p->code[currentpc(L, ci)];
     if (GET_OPCODE(i) == OP_CALL || GET_OPCODE(i) == OP_TAILCALL ||
         GET_OPCODE(i) == OP_TFORLOOP)
         return getobjname(L, ci, GETARG_A(i), name);
@@ -502,8 +500,7 @@ static const char *getfuncname(lua_State *L, CallInfo *ci, const char **name) {
 
 /* only ANSI way to check whether a pointer points to an array */
 static int isinstack(CallInfo *ci, const TValue *o) {
-    StkId p;
-    for (p = ci->base; p < ci->top; p++)
+    for (StkId p = ci->base; p < ci->top; p++)
         if (o == p)
             return 1;
     return 0;

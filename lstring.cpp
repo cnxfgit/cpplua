@@ -39,12 +39,10 @@ void luaS_resize(lua_State *L, int newsize) {
 
 static TString *newlstr(lua_State *L, const char *str, size_t l,
                         unsigned int h) {
-    TString *ts;
-    stringtable *tb;
     if (l + 1 > (MAX_SIZET - sizeof(TString)) / sizeof(char))
         luaM_toobig(L);
-    ts = cast(TString *,
-              luaM_malloc(L, (l + 1) * sizeof(char) + sizeof(TString)));
+    TString *ts = cast(
+        TString *, luaM_malloc(L, (l + 1) * sizeof(char) + sizeof(TString)));
     ts->tsv.len = l;
     ts->tsv.hash = h;
     ts->tsv.marked = luaC_white(G(L));
@@ -52,7 +50,7 @@ static TString *newlstr(lua_State *L, const char *str, size_t l,
     ts->tsv.reserved = 0;
     memcpy(ts + 1, str, l * sizeof(char));
     ((char *)(ts + 1))[l] = '\0'; /* ending 0 */
-    tb = &G(L)->strt;
+    stringtable *tb = &G(L)->strt;
     h = lmod(h, tb->size);
     ts->tsv.next = tb->hash[h]; /* chain new entry */
     tb->hash[h] = obj2gco(ts);
@@ -63,14 +61,13 @@ static TString *newlstr(lua_State *L, const char *str, size_t l,
 }
 
 TString *luaS_newlstr(lua_State *L, const char *str, size_t l) {
-    GCObject *o;
     unsigned int h = cast(unsigned int, l); /* seed */
     size_t step =
         (l >> 5) + 1; /* if string is too long, don't hash all its chars */
-    size_t l1;
-    for (l1 = l; l1 >= step; l1 -= step) /* compute hash */
+
+    for (size_t l1 = l; l1 >= step; l1 -= step) /* compute hash */
         h = h ^ ((h << 5) + (h >> 2) + cast(unsigned char, str[l1 - 1]));
-    for (o = G(L)->strt.hash[lmod(h, G(L)->strt.size)]; o != nullptr;
+    for (GCObject *o = G(L)->strt.hash[lmod(h, G(L)->strt.size)]; o != nullptr;
          o = o->gch.next) {
         TString *ts = rawgco2ts(o);
         if (ts->tsv.len == l && (memcmp(str, getstr(ts), l) == 0)) {

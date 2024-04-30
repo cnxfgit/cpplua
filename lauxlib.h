@@ -137,6 +137,4 @@ LUALIB_API void(luaL_pushresult)(luaL_Buffer *B);
 
 #define lua_getref(L, ref) lua_rawgeti(L, LUA_REGISTRYINDEX, (ref))
 
-#define luaL_reg luaL_Reg
-
 #endif

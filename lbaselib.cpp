@@ -19,9 +19,8 @@
 */
 static int luaB_print(lua_State *L) {
     int n = lua_gettop(L); /* number of arguments */
-    int i;
     lua_getglobal(L, "tostring");
-    for (i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) {
         const char *s;
         lua_pushvalue(L, -1); /* function to be called */
         lua_pushvalue(L, i);  /* value to print */
@@ -285,11 +284,10 @@ static const char *generic_reader(lua_State *L, void *ud, size_t *size) {
 }
 
 static int luaB_load(lua_State *L) {
-    int status;
     const char *cname = luaL_optstring(L, 2, "=(load)");
     luaL_checktype(L, 1, LUA_TFUNCTION);
     lua_settop(L, 3); /* function, eventual name, plus one reserved slot */
-    status = lua_load(L, generic_reader, nullptr, cname);
+    int status = lua_load(L, generic_reader, nullptr, cname);
     return load_aux(L, status);
 }
 
@@ -310,11 +308,10 @@ static int luaB_assert(lua_State *L) {
 }
 
 static int luaB_unpack(lua_State *L) {
-    int i, e, n;
     luaL_checktype(L, 1, LUA_TTABLE);
-    i = luaL_optint(L, 2, 1);
-    e = luaL_opt(L, luaL_checkint, 3, luaL_getn(L, 1));
-    n = e - i + 1; /* number of elements */
+    int i = luaL_optint(L, 2, 1);
+    int e = luaL_opt(L, luaL_checkint, 3, luaL_getn(L, 1));
+    int n = e - i + 1; /* number of elements */
     if (n <= 0)
         return 0; /* empty range */
     luaL_checkstack(L, n, "table too big to unpack");
@@ -340,20 +337,18 @@ static int luaB_select(lua_State *L) {
 }
 
 static int luaB_pcall(lua_State *L) {
-    int status;
     luaL_checkany(L, 1);
-    status = lua_pcall(L, lua_gettop(L) - 1, LUA_MULTRET, 0);
+    int status = lua_pcall(L, lua_gettop(L) - 1, LUA_MULTRET, 0);
     lua_pushboolean(L, (status == 0));
     lua_insert(L, 1);
     return lua_gettop(L); /* return status + all results */
 }
 
 static int luaB_xpcall(lua_State *L) {
-    int status;
     luaL_checkany(L, 2);
     lua_settop(L, 2);
     lua_insert(L, 1); /* put error function under function to be called */
-    status = lua_pcall(L, 0, LUA_MULTRET, 1);
+    int status = lua_pcall(L, 0, LUA_MULTRET, 1);
     lua_pushboolean(L, (status == 0));
     lua_replace(L, 1);
     return lua_gettop(L); /* return status + all results */
@@ -440,7 +435,6 @@ static const luaL_Reg base_funcs[] = {{"assert", luaB_assert},
 */
 
 static int auxresume(lua_State *L, lua_State *co, int narg) {
-    int status;
     if (!lua_checkstack(co, narg))
         luaL_error(L, "too many arguments to resume");
     if (lua_status(co) == 0 && lua_gettop(co) == 0) {
@@ -448,7 +442,7 @@ static int auxresume(lua_State *L, lua_State *co, int narg) {
         return -1; /* error flag */
     }
     lua_xmove(L, co, narg);
-    status = lua_resume(co, narg);
+    int status = lua_resume(co, narg);
     if (status == 0 || status == LUA_YIELD) {
         int nres = lua_gettop(co);
         if (!lua_checkstack(L, nres))
@@ -463,9 +457,9 @@ static int auxresume(lua_State *L, lua_State *co, int narg) {
 
 static int luaB_coresume(lua_State *L) {
     lua_State *co = lua_tothread(L, 1);
-    int r;
+
     luaL_argcheck(L, co, 1, "coroutine expected");
-    r = auxresume(L, co, lua_gettop(L) - 1);
+    int r = auxresume(L, co, lua_gettop(L) - 1);
     if (r < 0) {
         lua_pushboolean(L, 0);
         lua_insert(L, -2);
