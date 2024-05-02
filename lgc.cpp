@@ -189,20 +189,19 @@ static int traversetable(global_State *g, Table *h) {
 ** prototype is still being created
 */
 static void traverseproto(global_State *g, Proto *f) {
-    int i;
     if (f->source)
         stringmark(f->source);
-    for (i = 0; i < f->sizek; i++) /* mark literals */
+    for (int i = 0; i < f->sizek; i++) /* mark literals */
         markvalue(g, &f->k[i]);
-    for (i = 0; i < f->sizeupvalues; i++) { /* mark upvalue names */
+    for (int i = 0; i < f->sizeupvalues; i++) { /* mark upvalue names */
         if (f->upvalues[i])
             stringmark(f->upvalues[i]);
     }
-    for (i = 0; i < f->sizep; i++) { /* mark nested protos */
+    for (int i = 0; i < f->sizep; i++) { /* mark nested protos */
         if (f->p[i])
             markobject(g, f->p[i]);
     }
-    for (i = 0; i < f->sizelocvars; i++) { /* mark local-variable names */
+    for (int i = 0; i < f->sizelocvars; i++) { /* mark local-variable names */
         if (f->locvars[i].varname)
             stringmark(f->locvars[i].varname);
     }
@@ -211,13 +210,11 @@ static void traverseproto(global_State *g, Proto *f) {
 static void traverseclosure(global_State *g, Closure *cl) {
     markobject(g, cl->c.env);
     if (cl->c.isC) {
-        int i;
-        for (i = 0; i < cl->c.nupvalues; i++) /* mark its upvalues */
+        for (int i = 0; i < cl->c.nupvalues; i++) /* mark its upvalues */
             markvalue(g, &cl->c.upvalue[i]);
     } else {
-        int i;
         markobject(g, cl->l.p);
-        for (i = 0; i < cl->l.nupvalues; i++) /* mark its upvalues */
+        for (int i = 0; i < cl->l.nupvalues; i++) /* mark its upvalues */
             markobject(g, cl->l.upvals[i]);
     }
 }
@@ -454,17 +451,15 @@ void luaC_callGCTM(lua_State *L) {
 
 void luaC_freeall(lua_State *L) {
     global_State *g = G(L);
-    int i;
     g->currentwhite =
         WHITEBITS | bitmask(SFIXEDBIT); /* mask to collect all elements */
     sweepwholelist(L, &g->rootgc);
-    for (i = 0; i < g->strt.size; i++) /* free all string lists */
+    for (int i = 0; i < g->strt.size; i++) /* free all string lists */
         sweepwholelist(L, &g->strt.hash[i]);
 }
 
 static void markmt(global_State *g) {
-    int i;
-    for (i = 0; i < NUM_TAGS; i++)
+    for (int i = 0; i < NUM_TAGS; i++)
         if (g->mt[i])
             markobject(g, g->mt[i]);
 }

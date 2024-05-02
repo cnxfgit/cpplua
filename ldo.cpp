@@ -175,7 +175,6 @@ void luaD_callhook(lua_State *L, int event, int line) {
 }
 
 static StkId adjust_varargs(lua_State *L, Proto *p, int actual) {
-    int i;
     int nfixargs = p->numparams;
     Table *htab = nullptr;
     StkId base, fixed;
@@ -184,7 +183,7 @@ static StkId adjust_varargs(lua_State *L, Proto *p, int actual) {
     /* move fixed parameters to final position */
     fixed = L->top - actual; /* first fixed argument */
     base = L->top;           /* final position of first argument */
-    for (i = 0; i < nfixargs; i++) {
+    for (int i = 0; i < nfixargs; i++) {
         setobjs2s(L, L->top++, fixed + i);
         setnilvalue(fixed + i);
     }

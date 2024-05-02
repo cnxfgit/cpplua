@@ -19,7 +19,6 @@
   represented by 2*max), which is half the maximum for the corresponding
   unsigned argument.
 ===========================================================================*/
-
 enum OpMode { iABC, iABx, iAsBx }; /* basic instruction format */
 
 /*
@@ -128,7 +127,6 @@ enum OpMode { iABC, iABx, iAsBx }; /* basic instruction format */
 /*
 ** grep "ORDER OP" if you change these enums
 */
-
 enum OpCode {
     /*----------------------------------------------------------------------
     name		args	description
@@ -187,7 +185,7 @@ enum OpCode {
     OP_CLOSURE, /*	A Bx	R(A) := closure(KPROTO[Bx], R(A), ... ,R(A+n))	*/
 
     OP_VARARG /*	A B	R(A), R(A+1), ..., R(A+B-1) = vararg		*/
-} ;
+};
 
 #define NUM_OPCODES (cast(int, OP_VARARG) + 1)
 
@@ -219,7 +217,6 @@ enum OpCode {
 ** bit 6: instruction set register A
 ** bit 7: operator is a test
 */
-
 enum OpArgMask {
     OpArgN, /* argument is not used */
     OpArgU, /* argument is used */
@@ -229,9 +226,9 @@ enum OpArgMask {
 
 LUAI_DATA const lu_byte luaP_opmodes[NUM_OPCODES];
 
-#define getOpMode(m) (cast(enum OpMode, luaP_opmodes[m] & 3))
-#define getBMode(m) (cast(enum OpArgMask, (luaP_opmodes[m] >> 4) & 3))
-#define getCMode(m) (cast(enum OpArgMask, (luaP_opmodes[m] >> 2) & 3))
+#define getOpMode(m) (cast(OpMode, luaP_opmodes[m] & 3))
+#define getBMode(m) (cast(OpArgMask, (luaP_opmodes[m] >> 4) & 3))
+#define getCMode(m) (cast(OpArgMask, (luaP_opmodes[m] >> 2) & 3))
 #define testAMode(m) (luaP_opmodes[m] & (1 << 6))
 #define testTMode(m) (luaP_opmodes[m] & (1 << 7))
 

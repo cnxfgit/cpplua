@@ -162,10 +162,9 @@ static void removevars(LexState *ls, int tolevel) {
 }
 
 static int indexupvalue(FuncState *fs, TString *name, expdesc *v) {
-    int i;
     Proto *f = fs->f;
     int oldsize = f->sizeupvalues;
-    for (i = 0; i < f->nups; i++) {
+    for (int i = 0; i < f->nups; i++) {
         if (fs->upvalues[i].k == v->k && fs->upvalues[i].info == v->u.s.info) {
             return i;
         }
@@ -184,8 +183,7 @@ static int indexupvalue(FuncState *fs, TString *name, expdesc *v) {
 }
 
 static int searchvar(FuncState *fs, TString *n) {
-    int i;
-    for (i = fs->nactvar - 1; i >= 0; i--) {
+    for (int i = fs->nactvar - 1; i >= 0; i--) {
         if (n == getlocvar(fs, i).varname)
             return i;
     }
@@ -281,7 +279,6 @@ static void pushclosure(LexState *ls, FuncState *func, expdesc *v) {
     FuncState *fs = ls->fs;
     Proto *f = fs->f;
     int oldsize = f->sizep;
-    int i;
     luaM_growvector(ls->L, f->p, fs->np, f->sizep, Proto *, MAXARG_Bx,
                     "constant table overflow");
     while (oldsize < f->sizep)
@@ -289,7 +286,7 @@ static void pushclosure(LexState *ls, FuncState *func, expdesc *v) {
     f->p[fs->np++] = func->f;
     luaC_objbarrier(ls->L, f, func->f);
     init_exp(v, VRELOCABLE, luaK_codeABx(fs, OP_CLOSURE, 0, fs->np - 1));
-    for (i = 0; i < func->f->nups; i++) {
+    for (int i = 0; i < func->f->nups; i++) {
         OpCode o = (func->upvalues[i].k == VLOCAL) ? OP_MOVE : OP_GETUPVAL;
         luaK_codeABC(fs, o, 0, func->upvalues[i].info, 0);
     }

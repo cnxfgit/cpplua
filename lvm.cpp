@@ -278,8 +278,6 @@ void luaV_concat(lua_State *L, int total, int last) {
         } else if (tsvalue(top - 1)->len > 0) { /* if len=0, do nothing */
             /* at least two string values; get as many as possible */
             size_t tl = tsvalue(top - 1)->len;
-            char *buffer;
-            int i;
             /* collect total length */
             for (n = 1; n < total && tostring(L, top - n - 1); n++) {
                 size_t l = tsvalue(top - n - 1)->len;
@@ -287,9 +285,9 @@ void luaV_concat(lua_State *L, int total, int last) {
                     luaG_runerror(L, "string length overflow");
                 tl += l;
             }
-            buffer = luaZ_openspace(L, &G(L)->buff, tl);
+            char *buffer = luaZ_openspace(L, &G(L)->buff, tl);
             tl = 0;
-            for (i = n; i > 0; i--) { /* concat all strings */
+            for (int i = n; i > 0; i--) { /* concat all strings */
                 size_t l = tsvalue(top - i)->len;
                 memcpy(buffer + tl, svalue(top - i), l);
                 tl += l;

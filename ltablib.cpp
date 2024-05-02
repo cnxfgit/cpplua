@@ -9,10 +9,9 @@
 #define aux_getn(L, n) (luaL_checktype(L, n, LUA_TTABLE), luaL_getn(L, n))
 
 static int foreachi(lua_State *L) {
-    int i;
     int n = aux_getn(L, 1);
     luaL_checktype(L, 2, LUA_TFUNCTION);
-    for (i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) {
         lua_pushvalue(L, 2);   /* function */
         lua_pushinteger(L, i); /* 1st argument */
         lua_rawgeti(L, 1, i);  /* 2nd argument */
@@ -81,11 +80,10 @@ static int tinsert(lua_State *L) {
         break;
     }
     case 3: {
-        int i;
         pos = luaL_checkint(L, 2); /* 2nd argument is the position */
         if (pos > e)
             e = pos;                /* `grow' array if necessary */
-        for (i = e; i > pos; i--) { /* move up elements */
+        for (int i = e; i > pos; i--) { /* move up elements */
             lua_rawgeti(L, 1, i - 1);
             lua_rawseti(L, 1, i); /* t[i] = t[i-1] */
         }

@@ -63,10 +63,9 @@ static const Node dummynode_ = {
 */
 static Node *hashnum(const Table *t, lua_Number n) {
     unsigned int a[numints];
-    int i;
     n += 1; /* normalize number (avoid -0) */
     memcpy(a, &n, sizeof(a));
-    for (i = 1; i < numints; i++)
+    for (int i = 1; i < numints; i++)
         a[0] += a[i];
     return hashmod(t, a[0]);
 }
@@ -111,10 +110,9 @@ static int arrayindex(const TValue *key) {
 ** beginning of a traversal is signalled by -1.
 */
 static int findindex(lua_State *L, Table *t, StkId key) {
-    int i;
     if (ttisnil(key))
         return -1; /* first iteration */
-    i = arrayindex(key);
+    int i = arrayindex(key);
     if (0 < i && i <= t->sizearray) /* is `key' inside array part? */
         return i - 1;               /* yes; that's the index (corrected to C) */
     else {
@@ -154,19 +152,13 @@ int luaH_next(lua_State *L, Table *t, StkId key) {
     return 0; /* no more elements */
 }
 
-/*
-** {=============================================================
-** Rehash
-** ==============================================================
-*/
-
+/* Rehash */
 static int computesizes(int nums[], int *narray) {
-    int i;
-    int twotoi; /* 2^i */
     int a = 0;  /* number of elements smaller than 2^i */
     int na = 0; /* number of elements to go to array part */
     int n = 0;  /* optimal size for array part */
-    for (i = 0, twotoi = 1; twotoi / 2 < *narray; i++, twotoi *= 2) {
+    for (int i = 0, twotoi = 1 /* 2^i */; twotoi / 2 < *narray;
+         i++, twotoi *= 2) {
         if (nums[i] > 0) {
             a += nums[i];
             if (a > twotoi / 2) { /* more than half elements present? */
@@ -231,9 +223,8 @@ static int numusehash(const Table *t, int *nums, int *pnasize) {
 }
 
 static void setarrayvector(lua_State *L, Table *t, int size) {
-    int i;
     luaM_reallocvector(L, t->array, t->sizearray, size, TValue);
-    for (i = t->sizearray; i < size; i++)
+    for (int i = t->sizearray; i < size; i++)
         setnilvalue(&t->array[i]);
     t->sizearray = size;
 }
@@ -244,13 +235,12 @@ static void setnodevector(lua_State *L, Table *t, int size) {
         t->node = cast(Node *, dummynode); /* use common `dummynode' */
         lsize = 0;
     } else {
-        int i;
         lsize = ceillog2(size);
         if (lsize > MAXBITS)
             luaG_runerror(L, "table overflow");
         size = twoto(lsize);
         t->node = luaM_newvector(L, size, Node);
-        for (i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             Node *n = gnode(t, i);
             gnext(n) = nullptr;
             setnilvalue(gkey(n));
@@ -262,7 +252,6 @@ static void setnodevector(lua_State *L, Table *t, int size) {
 }
 
 static void resize(lua_State *L, Table *t, int nasize, int nhsize) {
-    int i;
     int oldasize = t->sizearray;
     int oldhsize = t->lsizenode;
     Node *nold = t->node;  /* save old hash ... */
@@ -273,7 +262,7 @@ static void resize(lua_State *L, Table *t, int nasize, int nhsize) {
     if (nasize < oldasize) { /* array part must shrink? */
         t->sizearray = nasize;
         /* re-insert elements from vanishing slice */
-        for (i = nasize; i < oldasize; i++) {
+        for (int i = nasize; i < oldasize; i++) {
             if (!ttisnil(&t->array[i]))
                 setobjt2t(L, luaH_setnum(L, t, i + 1), &t->array[i]);
         }
@@ -281,7 +270,7 @@ static void resize(lua_State *L, Table *t, int nasize, int nhsize) {
         luaM_reallocvector(L, t->array, oldasize, nasize, TValue);
     }
     /* re-insert elements from hash part */
-    for (i = twoto(oldhsize) - 1; i >= 0; i--) {
+    for (int i = twoto(oldhsize) - 1; i >= 0; i--) {
         Node *old = nold + i;
         if (!ttisnil(gval(old)))
             setobjt2t(L, luaH_set(L, t, key2tval(old)), gval(old));
@@ -299,9 +288,8 @@ static void rehash(lua_State *L, Table *t, const TValue *ek) {
     int nasize, na;
     int nums[MAXBITS +
              1]; /* nums[i] = number of keys between 2^(i-1) and 2^i */
-    int i;
     int totaluse;
-    for (i = 0; i <= MAXBITS; i++)
+    for (int i = 0; i <= MAXBITS; i++)
         nums[i] = 0;               /* reset counts */
     nasize = numusearray(t, nums); /* count keys in array part */
     totaluse = nasize;             /* all those keys are integer keys */

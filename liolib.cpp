@@ -40,9 +40,8 @@ static void fileerror(lua_State *L, int arg, const char *filename) {
 #define topfile(L) ((FILE **)luaL_checkudata(L, 1, LUA_FILEHANDLE))
 
 static int io_type(lua_State *L) {
-    void *ud;
     luaL_checkany(L, 1);
-    ud = lua_touserdata(L, 1);
+    void *ud = lua_touserdata(L, 1);
     lua_getfield(L, LUA_REGISTRYINDEX, LUA_FILEHANDLE);
     if (ud == nullptr || !lua_getmetatable(L, 1) || !lua_rawequal(L, -2, -1))
         lua_pushnil(L); /* not a file */
