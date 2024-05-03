@@ -127,8 +127,8 @@ static int registerlocalvar(LexState *ls, TString *varname) {
     FuncState *fs = ls->fs;
     Proto *f = fs->f;
     int oldsize = f->sizelocvars;
-    luaM_growvector(ls->L, f->locvars, fs->nlocvars, f->sizelocvars, LocVar,
-                    SHRT_MAX, "too many local variables");
+    luaM_growvector<LocVar>(ls->L, &f->locvars, fs->nlocvars, &f->sizelocvars,
+                            SHRT_MAX, "too many local variables");
     while (oldsize < f->sizelocvars)
         f->locvars[oldsize++].varname = nullptr;
     f->locvars[fs->nlocvars].varname = varname;
@@ -171,8 +171,8 @@ static int indexupvalue(FuncState *fs, TString *name, expdesc *v) {
     }
     /* new one */
     luaY_checklimit(fs, f->nups + 1, LUAI_MAXUPVALUES, "upvalues");
-    luaM_growvector(fs->L, f->upvalues, f->nups, f->sizeupvalues, TString *,
-                    MAX_INT, "");
+    luaM_growvector<TString *>(fs->L, &f->upvalues, f->nups, &f->sizeupvalues,
+                               MAX_INT, "");
     while (oldsize < f->sizeupvalues)
         f->upvalues[oldsize++] = nullptr;
     f->upvalues[f->nups] = name;
@@ -279,7 +279,7 @@ static void pushclosure(LexState *ls, FuncState *func, expdesc *v) {
     FuncState *fs = ls->fs;
     Proto *f = fs->f;
     int oldsize = f->sizep;
-    luaM_growvector(ls->L, f->p, fs->np, f->sizep, Proto *, MAXARG_Bx,
+    luaM_growvector<Proto *>(ls->L, &f->p, fs->np, &f->sizep, MAXARG_Bx,
                     "constant table overflow");
     while (oldsize < f->sizep)
         f->p[oldsize++] = nullptr;
@@ -325,17 +325,17 @@ static void close_func(LexState *ls) {
     Proto *f = fs->f;
     removevars(ls, 0);
     luaK_ret(fs, 0, 0); /* final return */
-    luaM_reallocvector(L, f->code, f->sizecode, fs->pc, Instruction);
+    luaM_reallocvector<Instruction>(L, &f->code, f->sizecode, fs->pc);
     f->sizecode = fs->pc;
-    luaM_reallocvector(L, f->lineinfo, f->sizelineinfo, fs->pc, int);
+    luaM_reallocvector<int>(L, &f->lineinfo, f->sizelineinfo, fs->pc);
     f->sizelineinfo = fs->pc;
-    luaM_reallocvector(L, f->k, f->sizek, fs->nk, TValue);
+    luaM_reallocvector<TValue>(L, &f->k, f->sizek, fs->nk);
     f->sizek = fs->nk;
-    luaM_reallocvector(L, f->p, f->sizep, fs->np, Proto *);
+    luaM_reallocvector<Proto *>(L, &f->p, f->sizep, fs->np);
     f->sizep = fs->np;
-    luaM_reallocvector(L, f->locvars, f->sizelocvars, fs->nlocvars, LocVar);
+    luaM_reallocvector<LocVar>(L, &f->locvars, f->sizelocvars, fs->nlocvars);
     f->sizelocvars = fs->nlocvars;
-    luaM_reallocvector(L, f->upvalues, f->sizeupvalues, f->nups, TString *);
+    luaM_reallocvector<TString *>(L, &f->upvalues, f->sizeupvalues, f->nups);
     f->sizeupvalues = f->nups;
     ls->fs = fs->prev;
     L->top -= 2; /* remove table and prototype from the stack */

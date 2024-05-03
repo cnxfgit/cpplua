@@ -220,7 +220,7 @@ static int numusehash(const Table *t, int *nums, int *pnasize) {
 }
 
 static void setarrayvector(lua_State *L, Table *t, int size) {
-    luaM_reallocvector(L, t->array, t->sizearray, size, TValue);
+    luaM_reallocvector<TValue>(L, &t->array, t->sizearray, size);
     for (int i = t->sizearray; i < size; i++)
         setnilvalue(&t->array[i]);
     t->sizearray = size;
@@ -236,7 +236,7 @@ static void setnodevector(lua_State *L, Table *t, int size) {
         if (lsize > MAXBITS)
             luaG_runerror(L, "table overflow");
         size = twoto(lsize);
-        t->node = luaM_newvector(L, size, Node);
+        t->node = luaM_newvector<Node>(L, size);
         for (int i = 0; i < size; i++) {
             Node *n = gnode(t, i);
             gnext(n) = nullptr;
@@ -264,7 +264,7 @@ static void resize(lua_State *L, Table *t, int nasize, int nhsize) {
                 setobjt2t(L, luaH_setnum(L, t, i + 1), &t->array[i]);
         }
         /* shrink array */
-        luaM_reallocvector(L, t->array, oldasize, nasize, TValue);
+        luaM_reallocvector<TValue>(L, &t->array, oldasize, nasize);
     }
     /* re-insert elements from hash part */
     for (int i = twoto(oldhsize) - 1; i >= 0; i--) {
@@ -273,7 +273,7 @@ static void resize(lua_State *L, Table *t, int nasize, int nhsize) {
             setobjt2t(L, luaH_set(L, t, key2tval(old)), gval(old));
     }
     if (nold != dummynode)
-        luaM_freearray(L, nold, twoto(oldhsize), Node); /* free old array */
+        luaM_freearray<Node>(L, nold, twoto(oldhsize)); /* free old array */
 }
 
 void luaH_resizearray(lua_State *L, Table *t, int nasize) {
@@ -300,12 +300,8 @@ static void rehash(lua_State *L, Table *t, const TValue *ek) {
     resize(L, t, nasize, totaluse - na);
 }
 
-/*
-** }=============================================================
-*/
-
 Table *luaH_new(lua_State *L, int narray, int nhash) {
-    Table *t = luaM_new(L, Table);
+    Table *t = luaM_new<Table>(L);
     luaC_link(L, obj2gco(t), LUA_TTABLE);
     t->metatable = nullptr;
     t->flags = cast_byte(~0);
@@ -321,8 +317,8 @@ Table *luaH_new(lua_State *L, int narray, int nhash) {
 
 void luaH_free(lua_State *L, Table *t) {
     if (t->node != dummynode)
-        luaM_freearray(L, t->node, sizenode(t), Node);
-    luaM_freearray(L, t->array, t->sizearray, TValue);
+        luaM_freearray<Node>(L, t->node, sizenode(t));
+    luaM_freearray<TValue>(L, t->array, t->sizearray);
     luaM_free(L, t);
 }
 

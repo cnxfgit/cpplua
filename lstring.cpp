@@ -16,7 +16,7 @@ void luaS_resize(lua_State *L, int newsize) {
 
     if (G(L)->gcstate == GCSsweepstring)
         return; /* cannot resize during GC traverse */
-    newhash = luaM_newvector(L, newsize, GCObject *);
+    newhash = luaM_newvector<GCObject *>(L, newsize);
     tb = &G(L)->strt;
     for (int i = 0; i < newsize; i++)
         newhash[i] = nullptr;
@@ -32,7 +32,7 @@ void luaS_resize(lua_State *L, int newsize) {
             p = next;
         }
     }
-    luaM_freearray(L, tb->hash, tb->size, TString *);
+    luaM_freearray<TString *>(L, tb->hash, tb->size);
     tb->size = newsize;
     tb->hash = newhash;
 }

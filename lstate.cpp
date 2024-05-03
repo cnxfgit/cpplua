@@ -24,12 +24,12 @@ struct LG {
 
 static void stack_init(lua_State *L1, lua_State *L) {
     /* initialize CallInfo array */
-    L1->base_ci = luaM_newvector(L, BASIC_CI_SIZE, CallInfo);
+    L1->base_ci = luaM_newvector<CallInfo>(L, BASIC_CI_SIZE);
     L1->ci = L1->base_ci;
     L1->size_ci = BASIC_CI_SIZE;
     L1->end_ci = L1->base_ci + L1->size_ci - 1;
     /* initialize stack array */
-    L1->stack = luaM_newvector(L, BASIC_STACK_SIZE + EXTRA_STACK, TValue);
+    L1->stack = luaM_newvector<TValue>(L, BASIC_STACK_SIZE + EXTRA_STACK);
     L1->stacksize = BASIC_STACK_SIZE + EXTRA_STACK;
     L1->top = L1->stack;
     L1->stack_last = L1->stack + (L1->stacksize - EXTRA_STACK) - 1;
@@ -41,8 +41,8 @@ static void stack_init(lua_State *L1, lua_State *L) {
 }
 
 static void freestack(lua_State *L, lua_State *L1) {
-    luaM_freearray(L, L1->base_ci, L1->size_ci, CallInfo);
-    luaM_freearray(L, L1->stack, L1->stacksize, TValue);
+    luaM_freearray<CallInfo>(L, L1->base_ci, L1->size_ci);
+    luaM_freearray<TValue>(L, L1->stack, L1->stacksize);
 }
 
 /*
@@ -85,7 +85,7 @@ static void close_state(lua_State *L) {
     global_State *g = G(L);
     luaF_close(L, L->stack); /* close all upvalues for this thread */
     luaC_freeall(L);         /* collect all objects */
-    luaM_freearray(L, G(L)->strt.hash, G(L)->strt.size, TString *);
+    luaM_freearray<TString *>(L, G(L)->strt.hash, G(L)->strt.size);
     luaZ_resizebuffer(L, &g->buff, 0);
     freestack(L, L);
     (*g->frealloc)(L, 0);

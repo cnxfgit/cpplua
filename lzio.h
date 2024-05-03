@@ -36,8 +36,10 @@ struct Mbuffer {
 #define luaZ_resetbuffer(buff) ((buff)->n = 0)
 
 #define luaZ_resizebuffer(L, buff, size)                                       \
-    (luaM_reallocvector(L, (buff)->buffer, (buff)->buffsize, size, char),      \
-     (buff)->buffsize = size)
+    {                                                                          \
+        luaM_reallocvector<char>(L, &(buff)->buffer, (buff)->buffsize, size);   \
+        (buff)->buffsize = size;                                               \
+    }
 
 LUAI_FUNC char *luaZ_openspace(lua_State *L, Mbuffer *buff, size_t n);
 LUAI_FUNC void luaZ_init(lua_State *L, ZIO *z, lua_Reader reader, void *data);

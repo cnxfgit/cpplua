@@ -30,7 +30,7 @@ Closure *luaF_newLclosure(lua_State *L, int nelems, Table *e) {
 }
 
 UpVal *luaF_newupval(lua_State *L) {
-    UpVal *uv = luaM_new(L, UpVal);
+    UpVal *uv = luaM_new<UpVal>(L);
     luaC_link(L, obj2gco(uv), LUA_TUPVAL);
     uv->v = &uv->u.value;
     setnilvalue(uv->v);
@@ -50,7 +50,7 @@ UpVal *luaF_findupval(lua_State *L, StkId level) {
         }
         pp = &p->next;
     }
-    uv = luaM_new(L, UpVal); /* not found: create a new one */
+    uv = luaM_new<UpVal>(L); /* not found: create a new one */
     uv->tt = LUA_TUPVAL;
     uv->marked = luaC_white(g);
     uv->v = level;  /* current value lives in the stack */
@@ -92,7 +92,7 @@ void luaF_close(lua_State *L, StkId level) {
 }
 
 Proto *luaF_newproto(lua_State *L) {
-    Proto *f = luaM_new(L, Proto);
+    Proto *f = luaM_new<Proto>(L);
     luaC_link(L, obj2gco(f), LUA_TPROTO);
     f->k = nullptr;
     f->sizek = 0;
@@ -117,12 +117,12 @@ Proto *luaF_newproto(lua_State *L) {
 }
 
 void luaF_freeproto(lua_State *L, Proto *f) {
-    luaM_freearray(L, f->code, f->sizecode, Instruction);
-    luaM_freearray(L, f->p, f->sizep, Proto *);
-    luaM_freearray(L, f->k, f->sizek, TValue);
-    luaM_freearray(L, f->lineinfo, f->sizelineinfo, int);
-    luaM_freearray(L, f->locvars, f->sizelocvars, struct LocVar);
-    luaM_freearray(L, f->upvalues, f->sizeupvalues, TString *);
+    luaM_freearray<Instruction>(L, f->code, f->sizecode);
+    luaM_freearray<Proto *>(L, f->p, f->sizep);
+    luaM_freearray<TValue>(L, f->k, f->sizek);
+    luaM_freearray<int>(L, f->lineinfo, f->sizelineinfo);
+    luaM_freearray<LocVar>(L, f->locvars, f->sizelocvars);
+    luaM_freearray<TString *>(L, f->upvalues, f->sizeupvalues);
     luaM_free(L, f);
 }
 
