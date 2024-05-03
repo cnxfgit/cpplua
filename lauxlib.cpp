@@ -492,17 +492,6 @@ LUALIB_API int(luaL_loadstring)(lua_State *L, const char *s) {
     return luaL_loadbuffer(L, s, strlen(s), s);
 }
 
-static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
-    UNUSED(ud);
-    UNUSED(osize);
-    if (nsize == 0) {
-        free(ptr);
-        return nullptr;
-    }
-
-    return realloc(ptr, nsize);
-}
-
 static int panic(lua_State *L) {
     UNUSED(L); /* to avoid warnings */
     fprintf(stderr, "PANIC: unprotected error in call to Lua API (%s)\n",
@@ -510,8 +499,8 @@ static int panic(lua_State *L) {
     return 0;
 }
 
-LUALIB_API lua_State *luaL_newstate(void) {
-    lua_State *L = lua_newstate(l_alloc, nullptr);
+LUALIB_API lua_State *luaL_newstate() {
+    lua_State *L = lua_newstate(realloc);
     if (L)
         lua_atpanic(L, &panic);
     return L;

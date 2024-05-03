@@ -248,9 +248,9 @@ int luaD_precall(lua_State *L, StkId func, int nresults) {
             L->savedpc--; /* correct 'pc' */
         }
         return PCRLUA;
-    } else { /* if is a C function, call it */
+    } else {                              /* if is a C function, call it */
         luaD_checkstack(L, LUA_MINSTACK); /* ensure minimum stack size */
-        CallInfo *ci = inc_ci(L);                   /* now `enter' new function */
+        CallInfo *ci = inc_ci(L);         /* now `enter' new function */
         ci->func = restorestack(L, funcr);
         L->base = ci->base = ci->func + 1;
         ci->top = L->top + LUA_MINSTACK;
@@ -403,14 +403,15 @@ struct SParser { /* data to `f_parser' */
     ZIO *z;
     Mbuffer buff; /* buffer to be used by the scanner */
     const char *name;
+    SParser(ZIO *z_, const char *name_) : z(z_), buff(Mbuffer()), name(name_) {}
 };
 
 static void f_parser(lua_State *L, void *ud) {
     SParser *p = cast(SParser *, ud);
     int c = luaZ_lookahead(p->z);
     luaC_checkGC(L);
-    Proto *tf = ((c == LUA_SIGNATURE[0]) ? luaU_undump
-                                  : luaY_parser)(L, p->z, &p->buff, p->name);
+    Proto *tf = ((c == LUA_SIGNATURE[0]) ? luaU_undump : luaY_parser)(
+        L, p->z, &p->buff, p->name);
     Closure *cl = luaF_newLclosure(L, tf->nups, hvalue(gt(L)));
     cl->l.p = tf;
     for (int i = 0; i < tf->nups; i++) /* initialize eventual upvalues */
@@ -420,11 +421,6 @@ static void f_parser(lua_State *L, void *ud) {
 }
 
 int luaD_protectedparser(lua_State *L, ZIO *z, const char *name) {
-    SParser p;
-    p.z = z;
-    p.name = name;
-    luaZ_initbuffer(L, &p.buff);
-    int status = luaD_pcall(L, f_parser, &p, savestack(L, L->top), L->errfunc);
-    luaZ_freebuffer(L, &p.buff);
-    return status;
+    SParser p(z, name);
+    return luaD_pcall(L, f_parser, &p, savestack(L, L->top), L->errfunc);
 }

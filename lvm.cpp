@@ -179,7 +179,7 @@ static int call_orderTM(lua_State *L, const TValue *p1, const TValue *p2,
     if (!luaO_rawequalObj(tm1, tm2)) /* different metamethods? */
         return -1;
     callTMres(L, L->top, tm1, p1, p2);
-    return !l_isfalse(L->top);
+    return !(L->top)->isfalse();
 }
 
 static int l_strcmp(const TString *ls, const TString *rs) {
@@ -265,7 +265,7 @@ int luaV_equalval(lua_State *L, const TValue *t1, const TValue *t2) {
     if (tm == nullptr)
         return 0;                     /* no TM? */
     callTMres(L, L->top, tm, t1, t2); /* call TM */
-    return !l_isfalse(L->top);
+    return !(L->top)->isfalse();
 }
 
 void luaV_concat(lua_State *L, int total, int last) {
@@ -506,7 +506,7 @@ reentry: /* entry point */
         }
         case OP_NOT: {
             int res =
-                l_isfalse(RB(i)); /* next assignment may change this value */
+                (RB(i))->isfalse(); /* next assignment may change this value */
             setbvalue(ra, res);
             continue;
         }
@@ -557,14 +557,14 @@ reentry: /* entry point */
             continue;
         }
         case OP_TEST: {
-            if (l_isfalse(ra) != GETARG_C(i))
+            if ((ra)->isfalse() != GETARG_C(i))
                 dojump(L, pc, GETARG_sBx(*pc));
             pc++;
             continue;
         }
         case OP_TESTSET: {
             TValue *rb = RB(i);
-            if (l_isfalse(rb) != GETARG_C(i)) {
+            if ((rb)->isfalse() != GETARG_C(i)) {
                 setobjs2s(L, ra, rb);
                 dojump(L, pc, GETARG_sBx(*pc));
             }

@@ -14,10 +14,6 @@
 #include "ltable.h"
 #include "ltm.h"
 
-#define state_size(x) (sizeof(x) + LUAI_EXTRASPACE)
-#define fromstate(l) (cast(lu_byte *, (l)) - LUAI_EXTRASPACE)
-#define tostate(l) (cast(lua_State *, cast(lu_byte *, l) + LUAI_EXTRASPACE))
-
 /*
 ** Main thread combines a thread state and the global state
 */
@@ -90,13 +86,13 @@ static void close_state(lua_State *L) {
     luaF_close(L, L->stack); /* close all upvalues for this thread */
     luaC_freeall(L);         /* collect all objects */
     luaM_freearray(L, G(L)->strt.hash, G(L)->strt.size, TString *);
-    luaZ_freebuffer(L, &g->buff);
+    luaZ_resizebuffer(L, &g->buff, 0);
     freestack(L, L);
-    (*g->frealloc)(g->ud, fromstate(L), state_size(LG), 0);
+    (*g->frealloc)(L, 0);
 }
 
 lua_State *luaE_newthread(lua_State *L) {
-    lua_State *L1 = tostate(luaM_malloc(L, state_size(lua_State)));
+    lua_State *L1 = cast(lua_State*, luaM_malloc(L, sizeof(lua_State)));
     luaC_link(L, obj2gco(L1), LUA_TTHREAD);
     preinit_state(L1, G(L));
     stack_init(L1, L);          /* init stack */
@@ -112,16 +108,16 @@ void luaE_freethread(lua_State *L, lua_State *L1) {
     luaF_close(L1, L1->stack); /* close all upvalues for this thread */
 
     freestack(L, L1);
-    luaM_freemem(L, fromstate(L1), state_size(lua_State));
+    luaM_freemem(L, L1, sizeof(lua_State));
 }
 
-LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud) {
+LUA_API lua_State *lua_newstate(lua_Alloc f) {
     lua_State *L;
     global_State *g;
-    void *l = (*f)(ud, nullptr, 0, state_size(LG));
+    void *l = (*f)(nullptr, sizeof(LG));
     if (l == nullptr)
         return nullptr;
-    L = tostate(l);
+    L = cast(lua_State*,l);
     g = &((LG *)L)->g;
     L->next = nullptr;
     L->tt = LUA_TTHREAD;
@@ -130,7 +126,6 @@ LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud) {
     set2bits(L->marked, FIXEDBIT, SFIXEDBIT);
     preinit_state(L, g);
     g->frealloc = f;
-    g->ud = ud;
     g->mainthread = L;
     g->uvhead.u.l.prev = &g->uvhead;
     g->uvhead.u.l.next = &g->uvhead;
@@ -139,7 +134,7 @@ LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud) {
     g->strt.nuse = 0;
     g->strt.hash = nullptr;
     setnilvalue(registry(L));
-    luaZ_initbuffer(L, &g->buff);
+    g->buff = Mbuffer();
     g->panic = nullptr;
     g->gcstate = GCSpause;
     g->rootgc = obj2gco(L);

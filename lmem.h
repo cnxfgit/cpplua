@@ -36,4 +36,10 @@ LUAI_FUNC void *luaM_growaux_(lua_State *L, void *block, int *size,
                               size_t size_elem, int limit,
                               const char *errormsg);
 
+// template<typename T>
+// inline void luaM_reallocvector(lua_State *L, T *v, size_t oldSize, size_t newSize) {
+//     v = cast(T*, luaM_reallocv(L, v, oldSize, newSize, sizeof(T)));
+// }
+
+
 #endif

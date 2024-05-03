@@ -69,6 +69,10 @@ struct TValue {
     inline bool islightuserdata() const {
         return this->tt == LUA_TLIGHTUSERDATA;
     }
+
+    inline bool isfalse() const {
+        return this->isnil() || (this->isboolean() && this->value.b == 0);
+    }
 };
 
 /* Macros to access values */
@@ -84,8 +88,6 @@ struct TValue {
 #define hvalue(o) (&(o)->value.gc->h)
 #define bvalue(o) ((o)->value.b)
 #define thvalue(o) (&(o)->value.gc->th)
-
-#define l_isfalse(o) ((o)->isnil() || ((o->isboolean()) && bvalue(o) == 0))
 
 /* Macros to set values */
 #define setnilvalue(obj) ((obj)->tt = LUA_TNIL)

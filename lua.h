@@ -109,16 +109,13 @@
 
 #endif
 
-#define lua_popen(L, c, m) ((void)L, popen(c, m))
-#define lua_pclose(L, file) ((void)L, (pclose(file) != -1))
-
-#define LUAI_EXTRASPACE 0
+#define lua_popen(L, c, m) (UNUSED(L), popen(c, m))
+#define lua_pclose(L, file) (UNUSED(L), (pclose(file) != -1))
 
 #define LUA_INTFRMLEN "l"
 #define LUA_INTFRM_T long
 
 #define LUA_VERSION "Lua 5.1"
-#define LUA_VERSION_NUM 501
 #define LUA_COPYRIGHT "Copyright (C) 1994-2006 Lua.org, PUC-Rio"
 #define LUA_AUTHORS "R. Ierusalimschy, L. H. de Figueiredo & W. Celes"
 
@@ -157,7 +154,7 @@ using lua_Writer = int (*)(lua_State *L, const void *p, size_t sz, void *ud);
 /*
 ** prototype for memory-allocation functions
 */
-using lua_Alloc = void *(*)(void *ud, void *ptr, size_t osize, size_t nsize);
+using lua_Alloc = void *(*)(void *ptr, size_t nsize);
 
 /*
 ** basic types
@@ -198,7 +195,7 @@ using lua_Integer = LUA_INTEGER;
 /*
 ** state manipulation
 */
-LUA_API lua_State *(lua_newstate)(lua_Alloc f, void *ud);
+LUA_API lua_State *(lua_newstate)(lua_Alloc f);
 LUA_API void(lua_close)(lua_State *L);
 LUA_API lua_State *(lua_newthread)(lua_State *L);
 

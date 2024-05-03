@@ -237,7 +237,7 @@ LUA_API lua_Integer lua_tointeger(lua_State *L, int idx) {
 
 LUA_API int lua_toboolean(lua_State *L, int idx) {
     const TValue *o = index2adr(L, idx);
-    return !l_isfalse(o);
+    return !o->isfalse();
 }
 
 LUA_API const char *lua_tolstring(lua_State *L, int idx, size_t *len) {

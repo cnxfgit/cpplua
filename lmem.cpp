@@ -57,7 +57,7 @@ void *luaM_toobig(lua_State *L) {
 */
 void *luaM_realloc_(lua_State *L, void *block, size_t osize, size_t nsize) {
     global_State *g = G(L);
-    block = (*g->frealloc)(g->ud, block, osize, nsize);
+    block = (*g->frealloc)(block, nsize);
     if (block == nullptr && nsize > 0)
         luaD_throw(L, LUA_ERRMEM);
     g->totalbytes = (g->totalbytes - osize) + nsize;

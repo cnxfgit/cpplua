@@ -879,7 +879,7 @@ static void check_conflict(LexState *ls, LHS_assign *lh, expdesc *v) {
     }
 }
 
-static void assignment(LexState *ls,LHS_assign *lh, int nvars) {
+static void assignment(LexState *ls, LHS_assign *lh, int nvars) {
     expdesc e;
     check_condition(ls, VLOCAL <= lh->v.k && lh->v.k <= VINDEXED,
                     "syntax error");
