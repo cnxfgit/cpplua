@@ -329,7 +329,6 @@ static void Arith(lua_State *L, StkId ra, const TValue *rb, const TValue *rc,
             setnvalue(ra, luai_numunm(nb));
             break;
         default:
-            assert(0);
             break;
         }
     } else if (!call_binTM(L, rb, rc, ra, op))

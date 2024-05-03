@@ -200,7 +200,7 @@ static int addk(FuncState *fs, TValue *k, TValue *v) {
     } else { /* constant not found; create a new entry */
         setnvalue(idx, cast_num(fs->nk));
         luaM_growvector<TValue>(L, &f->k, fs->nk, &f->sizek, MAXARG_Bx,
-                        "constant table overflow");
+                                "constant table overflow");
         while (oldsize < f->sizek)
             setnilvalue(&f->k[oldsize++]);
         setobj(L, &f->k[fs->nk], v);
@@ -441,7 +441,7 @@ void luaK_storevar(FuncState *fs, expdesc *var, expdesc *ex) {
         break;
     }
     default: {
-        assert(0); /* invalid var kind to store */
+        /* invalid var kind to store */
         break;
     }
     }
@@ -562,7 +562,7 @@ static void codenot(FuncState *fs, expdesc *e) {
         break;
     }
     default: {
-        assert(0); /* cannot happen */
+        /* cannot happen */
         break;
     }
     }
@@ -616,7 +616,6 @@ static int constfolding(OpCode op, expdesc *e1, expdesc *e2) {
     case OP_LEN:
         return 0; /* no constant folding for 'len' */
     default:
-        assert(0);
         r = 0;
         break;
     }
@@ -678,7 +677,7 @@ void luaK_prefix(FuncState *fs, UnOpr op, expdesc *e) {
         break;
     }
     default:
-        assert(0);
+        break;
     }
 }
 
@@ -774,7 +773,7 @@ void luaK_posfix(FuncState *fs, BinOpr op, expdesc *e1, expdesc *e2) {
         codecomp(fs, OP_LE, 0, e1, e2);
         break;
     default:
-        assert(0);
+        break;
     }
 }
 
@@ -787,11 +786,11 @@ static int luaK_code(FuncState *fs, Instruction i, int line) {
     dischargejpc(fs); /* `pc' will change */
     /* put new instruction in code array */
     luaM_growvector<Instruction>(fs->L, &f->code, fs->pc, &f->sizecode, MAX_INT,
-                    "code size overflow");
+                                 "code size overflow");
     f->code[fs->pc] = i;
     /* save corresponding line information */
     luaM_growvector<int>(fs->L, &f->lineinfo, fs->pc, &f->sizelineinfo, MAX_INT,
-                    "code size overflow");
+                         "code size overflow");
     f->lineinfo[fs->pc] = line;
     return fs->pc++;
 }

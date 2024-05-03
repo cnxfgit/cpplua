@@ -179,8 +179,6 @@ using lua_Alloc = void *(*)(void *ptr, size_t nsize);
 #define LUAI_FUNC extern
 #define LUAI_DATA extern
 
-#include <cassert>
-
 /* to avoid warnings, and to make sure value is really unused */
 #define UNUSED(x) ((void)(x))
 
@@ -356,7 +354,6 @@ LUA_API void(lua_concat)(lua_State *L, int n);
 /*
 ** compatibility macros and functions
 */
-
 #define lua_getregistry(L) lua_pushvalue(L, LUA_REGISTRYINDEX)
 
 #define lua_getgccount(L) lua_gc(L, LUA_GCCOUNT, 0)

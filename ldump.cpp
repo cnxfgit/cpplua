@@ -72,9 +72,6 @@ static void DumpConstants(const Proto *f, DumpState *D) {
         case LUA_TSTRING:
             DumpString(rawtsvalue(o), D);
             break;
-        default:
-            assert(0); /* cannot happen */
-            break;
         }
     }
     n = f->sizep;

@@ -97,8 +97,6 @@ static void reallymarkobject(global_State *g, GCObject *o) {
         g->gray = o;
         break;
     }
-    default:
-        assert(0);
     }
 }
 
@@ -289,7 +287,6 @@ static l_mem propagatemark(global_State *g) {
                sizeof(TString *) * p->sizeupvalues;
     }
     default:
-        assert(0);
         return 0;
     }
 }
@@ -371,8 +368,6 @@ static void freeobj(lua_State *L, GCObject *o) {
         luaM_freemem(L, o, sizeudata(gco2u(o)));
         break;
     }
-    default:
-        assert(0);
     }
 }
 
@@ -558,7 +553,6 @@ static l_mem singlestep(lua_State *L) {
         }
     }
     default:
-        assert(0);
         return 0;
     }
 }
