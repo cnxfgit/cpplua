@@ -57,18 +57,19 @@ union Value {
 struct TValue {
     Value value;
     int tt;
-};
 
-/* Macros to test type */
-#define ttisnil(o) (ttype(o) == LUA_TNIL)
-#define ttisnumber(o) (ttype(o) == LUA_TNUMBER)
-#define ttisstring(o) (ttype(o) == LUA_TSTRING)
-#define ttistable(o) (ttype(o) == LUA_TTABLE)
-#define ttisfunction(o) (ttype(o) == LUA_TFUNCTION)
-#define ttisboolean(o) (ttype(o) == LUA_TBOOLEAN)
-#define ttisuserdata(o) (ttype(o) == LUA_TUSERDATA)
-#define ttisthread(o) (ttype(o) == LUA_TTHREAD)
-#define ttislightuserdata(o) (ttype(o) == LUA_TLIGHTUSERDATA)
+    inline bool isnil() const { return this->tt == LUA_TNIL; }
+    inline bool isnumber() const { return this->tt == LUA_TNUMBER; }
+    inline bool isstring() const { return this->tt == LUA_TSTRING; }
+    inline bool istable() const { return this->tt == LUA_TTABLE; }
+    inline bool isfunction() const { return this->tt == LUA_TFUNCTION; }
+    inline bool isboolean() const { return this->tt == LUA_TBOOLEAN; }
+    inline bool isuserdata() const { return this->tt == LUA_TUSERDATA; }
+    inline bool isthread() const { return this->tt == LUA_TTHREAD; }
+    inline bool islightuserdata() const {
+        return this->tt == LUA_TLIGHTUSERDATA;
+    }
+};
 
 /* Macros to access values */
 #define ttype(o) ((o)->tt)
@@ -84,7 +85,7 @@ struct TValue {
 #define bvalue(o) ((o)->value.b)
 #define thvalue(o) (&(o)->value.gc->th)
 
-#define l_isfalse(o) (ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0))
+#define l_isfalse(o) ((o)->isnil() || ((o->isboolean()) && bvalue(o) == 0))
 
 /* Macros to set values */
 #define setnilvalue(obj) ((obj)->tt = LUA_TNIL)
@@ -291,13 +292,8 @@ union Closure {
 /*
 ** Tables
 */
-union TKey {
-    struct {
-        Value value;
-        int tt;
-        struct Node *next; /* for chaining */
-    } nk;
-    TValue tvk;
+struct TKey : public TValue{
+    struct Node *next; /* for chaining */
 };
 
 struct Node {

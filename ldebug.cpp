@@ -339,7 +339,7 @@ static Instruction symbexec(const Proto *pt, int lastpc, int reg) {
         }
         case OP_GETGLOBAL:
         case OP_SETGLOBAL: {
-            check(ttisstring(&pt->k[b]));
+            check((&pt->k[b])->isstring());
             break;
         }
         case OP_SELF: {
@@ -434,7 +434,7 @@ int luaG_checkcode(const Proto *pt) {
 }
 
 static const char *kname(Proto *p, int c) {
-    if (ISK(c) && ttisstring(&p->k[INDEXK(c)]))
+    if (ISK(c) && (&p->k[INDEXK(c)])->isstring())
         return svalue(&p->k[INDEXK(c)]);
     else
         return "?";
@@ -519,7 +519,7 @@ void luaG_typeerror(lua_State *L, const TValue *o, const char *op) {
 }
 
 void luaG_concaterror(lua_State *L, StkId p1, StkId p2) {
-    if (ttisstring(p1))
+    if (p1->isstring())
         p1 = p2;
     luaG_typeerror(L, p1, "concatenate");
 }
@@ -554,7 +554,7 @@ static void addinfo(lua_State *L, const char *msg) {
 void luaG_errormsg(lua_State *L) {
     if (L->errfunc != 0) { /* is there an error handling function? */
         StkId errfunc = restorestack(L, L->errfunc);
-        if (!ttisfunction(errfunc))
+        if (!errfunc->isfunction())
             luaD_throw(L, LUA_ERRERR);
         setobjs2s(L, L->top, L->top - 1);  /* move argument */
         setobjs2s(L, L->top - 1, errfunc); /* push function */

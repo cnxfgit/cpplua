@@ -18,7 +18,9 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "typeinfo": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "optional": "cpp",
+        "system_error": "cpp"
     },
     "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, BreakBeforeBraces: Attach, IndentWidth: 4, TabWidth: 4}",
     "commentTranslate.targetLanguage": "zh-CN",

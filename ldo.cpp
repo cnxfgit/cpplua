@@ -198,7 +198,7 @@ static StkId tryfuncTM(lua_State *L, StkId func) {
     const TValue *tm = luaT_gettmbyobj(L, func, TM_CALL);
     StkId p;
     ptrdiff_t funcr = savestack(L, func);
-    if (!ttisfunction(tm))
+    if (!tm->isfunction())
         luaG_typeerror(L, func, "call");
     /* Open a hole inside the stack at `func' */
     for (p = L->top; p > func; p--)
@@ -212,7 +212,7 @@ static StkId tryfuncTM(lua_State *L, StkId func) {
 #define inc_ci(L) ((L->ci == L->end_ci) ? growCI(L) : (++L->ci))
 
 int luaD_precall(lua_State *L, StkId func, int nresults) {
-    if (!ttisfunction(func))       /* `func' is not a function? */
+    if (!func->isfunction())       /* `func' is not a function? */
         func = tryfuncTM(L, func); /* check the `function' tag method */
     ptrdiff_t funcr = savestack(L, func);
     LClosure *cl = &clvalue(func)->l;

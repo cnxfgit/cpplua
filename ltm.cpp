@@ -33,7 +33,7 @@ void luaT_init(lua_State *L) {
 */
 const TValue *luaT_gettm(Table *events, TMS event, TString *ename) {
     const TValue *tm = luaH_getstr(events, ename);
-    if (ttisnil(tm)) {                           /* no tag method? */
+    if (tm->isnil()) {                           /* no tag method? */
         events->flags |= cast_byte(1u << event); /* cache this fact */
         return nullptr;
     } else

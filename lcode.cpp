@@ -195,7 +195,7 @@ static int addk(FuncState *fs, TValue *k, TValue *v) {
     TValue *idx = luaH_set(L, fs->h, k);
     Proto *f = fs->f;
     int oldsize = f->sizek;
-    if (ttisnumber(idx)) {
+    if (idx->isnumber()) {
         return cast_int(nvalue(idx));
     } else { /* constant not found; create a new entry */
         setnvalue(idx, cast_num(fs->nk));

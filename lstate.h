@@ -43,7 +43,7 @@ struct CallInfo {
 #define curr_func(L) (clvalue(L->ci->func))
 #define ci_func(ci) (clvalue((ci)->func))
 #define f_isLua(ci) (!ci_func(ci)->c.isC)
-#define isLua(ci) (ttisfunction((ci)->func) && f_isLua(ci))
+#define isLua(ci) ((ci)->func->isfunction() && f_isLua(ci))
 
 /*
 ** `global state', shared by all threads of this state

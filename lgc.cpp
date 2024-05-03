@@ -147,11 +147,10 @@ static int traversetable(global_State *g, Table *h) {
     int i;
     int weakkey = 0;
     int weakvalue = 0;
-    const TValue *mode;
     if (h->metatable)
         markobject(g, h->metatable);
-    mode = gfasttm(g, h->metatable, TM_MODE);
-    if (mode && ttisstring(mode)) { /* is there a weak mode? */
+    const TValue *mode = gfasttm(g, h->metatable, TM_MODE);
+    if (mode && mode->isstring()) { /* is there a weak mode? */
         weakkey = (strchr(svalue(mode), 'k') != nullptr);
         weakvalue = (strchr(svalue(mode), 'v') != nullptr);
         if (weakkey || weakvalue) {              /* is really weak? */
@@ -172,7 +171,7 @@ static int traversetable(global_State *g, Table *h) {
     i = sizenode(h);
     while (i--) {
         Node *n = gnode(h, i);
-        if (ttisnil(gval(n)))
+        if (gval(n)->isnil())
             removeentry(n); /* remove empty entries */
         else {
             if (!weakkey)
@@ -310,12 +309,12 @@ static void propagateall(global_State *g) {
 static int iscleared(const TValue *o, int iskey) {
     if (!iscollectable(o))
         return 0;
-    if (ttisstring(o)) {
+    if (o->isstring()) {
         stringmark(rawtsvalue(o)); /* strings are `values', so are never weak */
         return 0;
     }
     return iswhite(gcvalue(o)) ||
-           (ttisuserdata(o) && (!iskey && isfinalized(uvalue(o))));
+           (o->isuserdata() && (!iskey && isfinalized(uvalue(o))));
 }
 
 /*
@@ -335,7 +334,7 @@ static void cleartable(GCObject *l) {
         i = sizenode(h);
         while (i--) {
             Node *n = gnode(h, i);
-            if (!ttisnil(gval(n)) && /* non-empty entry? */
+            if (!gval(n)->isnil() && /* non-empty entry? */
                 (iscleared(key2tval(n), 1) || iscleared(gval(n), 0))) {
                 setnilvalue(gval(n)); /* remove value ... */
                 removeentry(n);       /* remove entry from table */

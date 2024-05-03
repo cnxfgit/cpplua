@@ -186,7 +186,7 @@ LUA_API int lua_isstring(lua_State *L, int idx) {
 
 LUA_API int lua_isuserdata(lua_State *L, int idx) {
     const TValue *o = index2adr(L, idx);
-    return (ttisuserdata(o) || ttislightuserdata(o));
+    return (o->isuserdata() || o->islightuserdata());
 }
 
 LUA_API int lua_rawequal(lua_State *L, int index1, int index2) {
@@ -242,7 +242,7 @@ LUA_API int lua_toboolean(lua_State *L, int idx) {
 
 LUA_API const char *lua_tolstring(lua_State *L, int idx, size_t *len) {
     StkId o = index2adr(L, idx);
-    if (!ttisstring(o)) {
+    if (!o->isstring()) {
         /* `luaV_tostring' may create a new string */
         if (!luaV_tostring(L, o)) { /* conversion failed? */
             if (len != nullptr)
@@ -294,7 +294,7 @@ LUA_API void *lua_touserdata(lua_State *L, int idx) {
 
 LUA_API lua_State *lua_tothread(lua_State *L, int idx) {
     StkId o = index2adr(L, idx);
-    return (!ttisthread(o)) ? nullptr : thvalue(o);
+    return (!o->isthread()) ? nullptr : thvalue(o);
 }
 
 LUA_API const void *lua_topointer(lua_State *L, int idx) {
@@ -513,7 +513,7 @@ LUA_API int lua_setmetatable(lua_State *L, int objindex) {
     TValue *obj = index2adr(L, objindex);
     Table *mt;
 
-    if (ttisnil(L->top - 1))
+    if ((L->top - 1)->isnil())
         mt = nullptr;
     else {
         mt = hvalue(L->top - 1);
@@ -759,7 +759,7 @@ LUA_API void *lua_newuserdata(lua_State *L, size_t size) {
 }
 
 static const char *aux_upvalue(StkId fi, int n, TValue **val) {
-    if (!ttisfunction(fi))
+    if (!fi->isfunction())
         return nullptr;
     Closure *f = clvalue(fi);
     if (f->c.isC) {
